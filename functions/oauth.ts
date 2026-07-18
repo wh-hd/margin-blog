@@ -17,7 +17,7 @@ const SUCCESS_HTML = (token: string) => `<!DOCTYPE html>
 <script>
   (function () {
     var token = ${JSON.stringify(token)};
-    var payload = JSON.stringify({ token: token, provider: "github" });
+    var payload = "authorization:github:success:" + JSON.stringify({ token: token, provider: "github" });
     function receiveMessage(e) {
       if (e.data !== "authorizing:github") return;
       if (!e.source) return;
