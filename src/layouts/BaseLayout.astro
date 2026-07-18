@@ -1,0 +1,36 @@
+---
+import SiteFooter from "../components/chrome/SiteFooter.astro";
+import SiteHeader from "../components/chrome/SiteHeader.astro";
+import SeoHead from "../components/seo/SeoHead.astro";
+import { buildContactViewModel } from "../lib/content/view-models";
+import type { SiteConfig } from "../lib/content/types";
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  image?: string;
+  type?: "website" | "article";
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  site?: SiteConfig;
+}
+const { title, description, canonical = Astro.url.href, image, type, noindex, jsonLd, site } = Astro.props;
+const contact = site ? buildContactViewModel(site) : undefined;
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <SeoHead {title} {description} {canonical} {image} {type} {noindex} {jsonLd} />
+  </head>
+  <body>
+    <SiteHeader currentPath={Astro.url.pathname} brand={site?.brand} />
+    <main id="main-content"><slot /></main>
+    <SiteFooter brand={site?.brand} positioning={site?.positioning} contactText={contact?.text} contactHref={contact?.href} />
+  </body>
+</html>

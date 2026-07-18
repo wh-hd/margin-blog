@@ -1,0 +1,23 @@
+---
+interface Item { slug: string; name: string; }
+interface Props { categories: Item[]; tags: Item[]; }
+const { categories, tags } = Astro.props;
+---
+<section class="filter" aria-labelledby="filter-title" data-filter-root>
+  <h2 id="filter-title">筛选文章</h2>
+  <div class="filter-group"><span>分类</span><div class="chip-list"><a class="chip" href="/articles/" data-clear-filter>全部</a>{categories.map((item) => <a class="chip" href={`/articles/?category=${item.slug}`} data-filter="category" data-value={item.slug}>{item.name}</a>)}</div></div>
+  <div class="filter-group"><span>标签</span><div class="chip-list">{tags.map((item) => <a class="chip" href={`/articles/?tag=${item.slug}`} data-filter="tag" data-value={item.slug}>#{item.name}</a>)}</div></div>
+  <p class="filter-summary" data-filter-summary aria-live="polite">显示全部文章</p>
+  <p class="filter-error" data-filter-error hidden>筛选暂时不可用，已显示全部文章。</p>
+  <div class="filter-empty" data-filter-empty hidden><strong>没有符合条件的文章</strong><p>你可以清除当前条件，或返回全部文章。</p><a class="link-arrow" href="/articles/">清除筛选 <span aria-hidden="true">→</span></a></div>
+</section>
+<style>
+  .filter { padding: var(--space-6); border: 1px solid var(--border-default); border-radius: var(--radius-2); background: var(--bg-subtle); }
+  h2 { margin: 0 0 var(--space-4); font-family: var(--font-display); font-size: var(--size-20); }
+  .filter-group { display: grid; grid-template-columns: 4rem 1fr; gap: var(--space-4); align-items: start; margin-top: var(--space-4); }
+  .filter-group > span { padding-top: var(--space-2); color: var(--text-muted); font-size: var(--size-14); font-weight: 700; }
+  .filter-summary, .filter-error { margin: var(--space-5) 0 0; color: var(--text-secondary); font-size: var(--size-14); }
+  .filter-error { color: var(--red-700); }
+  .filter-empty { margin-top: var(--space-5); padding-top: var(--space-5); border-top: 1px solid var(--border-default); }.filter-empty p { margin: var(--space-2) 0; color: var(--text-secondary); }
+  @media (max-width: 47.99rem) { .filter { padding: var(--space-4); } .filter-group { grid-template-columns: 1fr; gap: var(--space-2); } }
+</style>

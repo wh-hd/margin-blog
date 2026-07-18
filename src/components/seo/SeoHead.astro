@@ -1,0 +1,30 @@
+---
+import { serializeJsonLd } from "../../lib/seo/json-ld";
+
+interface Props {
+  title: string;
+  description: string;
+  canonical: string;
+  image?: string;
+  type?: "website" | "article";
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+}
+const { title, description, canonical, image = new URL("/og/default.svg", canonical).href, type = "website", noindex = false, jsonLd } = Astro.props;
+const safeJsonLd = jsonLd ? serializeJsonLd(jsonLd) : undefined;
+---
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+<meta property="og:type" content={type} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:locale" content="zh_CN" />
+<meta property="og:image" content={image} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={image} />
+{noindex && <meta name="robots" content="noindex,follow" />}
+{safeJsonLd && <script type="application/ld+json" set:html={safeJsonLd} />}

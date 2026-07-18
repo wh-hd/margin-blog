@@ -1,0 +1,26 @@
+---
+import { render } from "astro:content";
+import ArticleList from "../../components/articles/ArticleList.astro";
+import ArticleHeader from "../../components/content/ArticleHeader.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getArticleStaticPaths } from "../../lib/content/view-models";
+import type { ArticlePageModel } from "../../lib/content/types";
+export const getStaticPaths = getArticleStaticPaths;
+interface Props { model: ArticlePageModel; }
+const { model } = Astro.props;
+const { site, seo, post, related } = model;
+const { Content } = await render(post.entry);
+---
+<BaseLayout title={seo.title} description={seo.description} canonical={seo.canonical} image={seo.openGraph.image} type="article" jsonLd={seo.jsonLd} site={site}>
+  <article>
+    <ArticleHeader {post} />
+    <div class="shell"><div class="prose"><Content /></div></div>
+    <footer class="article-footer shell">
+      <div class="taxonomy"><span>分类：</span><a href={`/categories/${post.category.slug}/`}>{post.category.name}</a><span>标签：</span>{post.tags.map((tag) => <a href={`/tags/${tag.slug}/`}>#{tag.name}</a>)}</div>
+    </footer>
+  </article>
+  {related.length > 0 && <section class="section shell"><div class="section-header"><h2 class="section-title">继续阅读</h2></div><ArticleList posts={related} /></section>}
+</BaseLayout>
+<style>
+  .article-footer { padding-block: var(--space-12) var(--space-16); }.taxonomy { display: flex; max-width: var(--reading); flex-wrap: wrap; gap: var(--space-2) var(--space-4); padding-top: var(--space-6); border-top: 1px solid var(--border-default); color: var(--text-secondary); font-size: var(--size-14); }.taxonomy a { color: var(--action-primary); text-underline-offset: .2em; }.taxonomy a:hover { color: var(--action-hover); }
+</style>

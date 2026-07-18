@@ -1,0 +1,11 @@
+---
+import CategoryDirectory from "../../components/taxonomies/CategoryDirectory.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCategoriesPageModel } from "../../lib/content/view-models";
+const model = await getCategoriesPageModel();
+const { site, seo } = model;
+---
+<BaseLayout title={seo.title} description={seo.description} canonical={seo.canonical} image={seo.openGraph.image} jsonLd={seo.jsonLd} site={site}>
+  <div class="shell"><header class="page-intro"><p class="eyebrow">主题目录 / Categories</p><h1>分类</h1><p>用稳定的主题边界整理文章，而不是追逐临时热点。</p></header></div>
+  <section class="section shell" aria-label="分类目录"><CategoryDirectory categories={model.categories} /></section>
+</BaseLayout>

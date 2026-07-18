@@ -1,0 +1,11 @@
+---
+interface Props { text?: string; }
+const { text = "整理 AI 辅助开发中的可复用判断，重写两篇旧稿，并验证静态内容工作流的发布边界。" } = Astro.props;
+---
+<section class="focus shell" aria-labelledby="focus-title"><p class="eyebrow">编辑台近况 / July 2026</p><h2 id="focus-title">本月在做</h2><p>{text}</p></section>
+<style>
+  .focus { margin-block: var(--space-8); padding: var(--space-8); border-inline-start: 2px solid var(--action-primary); background: var(--bg-subtle); }
+  h2 { margin: 0 0 var(--space-3); font-family: var(--font-display); font-size: var(--size-24); }
+  p:last-child { max-width: 48rem; margin: 0; color: var(--text-secondary); font-size: var(--size-18); }
+  @media (max-width: 47.99rem) { .focus { padding: var(--space-6); } }
+</style>

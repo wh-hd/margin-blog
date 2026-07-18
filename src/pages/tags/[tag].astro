@@ -1,0 +1,16 @@
+---
+import ArticleList from "../../components/articles/ArticleList.astro";
+import RelatedTags from "../../components/taxonomies/RelatedTags.astro";
+import TaxonomyIntro from "../../components/taxonomies/TaxonomyIntro.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getTagStaticPaths } from "../../lib/content/view-models";
+import type { TagPageModel } from "../../lib/content/types";
+export const getStaticPaths = getTagStaticPaths;
+interface Props { model: TagPageModel; }
+const { model } = Astro.props;
+const { site, seo, tag, posts, relatedTags } = model;
+---
+<BaseLayout title={seo.title} description={seo.description} canonical={seo.canonical} image={seo.openGraph.image} jsonLd={seo.jsonLd} site={site}>
+  <div class="shell"><TaxonomyIntro type="tag" name={tag.name} description={tag.description} count={posts.length} />{relatedTags.length > 0 && <RelatedTags tags={relatedTags} title="经常一起出现的标签" />}</div>
+  <section class="section shell"><ArticleList {posts} emptyDescription="目前没有已发布文章使用这个标签。" /></section>
+</BaseLayout>

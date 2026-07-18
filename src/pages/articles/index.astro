@@ -1,0 +1,48 @@
+---
+import ArticleList from "../../components/articles/ArticleList.astro";
+import FilterBar from "../../components/articles/FilterBar.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getArticlesPageModel } from "../../lib/content/view-models";
+const model = await getArticlesPageModel();
+const { site, seo } = model;
+---
+<BaseLayout title={seo.title} description={seo.description} canonical={seo.canonical} image={seo.openGraph.image} jsonLd={seo.jsonLd} site={site}>
+  <div class="shell"><header class="page-intro"><p class="eyebrow">文章 / Articles</p><h1>全部文章</h1><p>按发布时间浏览关于 AI、产品与独立创作的实践文章。当前共 {model.total} 篇。</p></header><FilterBar categories={model.categories} tags={model.tags} /></div>
+  <section class="section shell" aria-label="文章列表"><ArticleList posts={model.posts} /></section>
+  <script>
+    const root = document.querySelector('[data-filter-root]');
+    const articles = [...document.querySelectorAll<HTMLElement>('[data-article]')];
+    if (root && articles.length) {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const category = params.get('category');
+        const tag = params.get('tag');
+        const allowedCategory = [...root.querySelectorAll<HTMLElement>('[data-filter="category"]')].some((el) => el.dataset.value === category);
+        const allowedTag = [...root.querySelectorAll<HTMLElement>('[data-filter="tag"]')].some((el) => el.dataset.value === tag);
+        const activeCategory = allowedCategory ? category : null;
+        const activeTag = allowedTag ? tag : null;
+        if (activeCategory || activeTag) {
+          let visible = 0;
+          articles.forEach((article) => {
+            const matchesCategory = !activeCategory || article.dataset.category === activeCategory;
+            const matchesTag = !activeTag || (article.dataset.tags ?? '').split(' ').includes(activeTag);
+            article.hidden = !(matchesCategory && matchesTag);
+            if (!article.hidden) visible += 1;
+          });
+          root.querySelectorAll<HTMLElement>('[data-filter]').forEach((filter) => {
+            const selected = (filter.dataset.filter === 'category' && filter.dataset.value === activeCategory) || (filter.dataset.filter === 'tag' && filter.dataset.value === activeTag);
+            if (selected) filter.setAttribute('aria-current', 'true');
+          });
+          const summary = root.querySelector<HTMLElement>('[data-filter-summary]');
+          if (summary) summary.textContent = `当前筛选共 ${visible} 篇文章。`;
+          const empty = root.querySelector<HTMLElement>('[data-filter-empty]');
+          if (empty) empty.hidden = visible !== 0;
+        }
+      } catch {
+        const error = root.querySelector<HTMLElement>('[data-filter-error]');
+        if (error) error.hidden = false;
+        articles.forEach((article) => { article.hidden = false; });
+      }
+    }
+  </script>
+</BaseLayout>

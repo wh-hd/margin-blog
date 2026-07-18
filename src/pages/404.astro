@@ -1,0 +1,27 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+const title = "页面未找到 | 侧注 MARGIN";
+const description = "链接可能已变更，或内容尚未发布。返回首页或继续浏览全部文章。";
+---
+<BaseLayout {title} {description} canonical={new URL("/404.html", Astro.site ?? Astro.url).href} noindex>
+  <section class="error-page shell">
+    <p class="eyebrow">404 / PAGE NOT FOUND</p>
+    <h1>这一页不在页边了。</h1>
+    <p>{description}</p>
+    <div class="actions">
+      <a class="primary" href="/"><span aria-hidden="true">⌂</span>返回首页</a>
+      <a href="/articles/"><span aria-hidden="true">▤</span>浏览全部文章</a>
+    </div>
+  </section>
+</BaseLayout>
+<style>
+  .error-page { min-height: 60vh; padding-block: var(--space-20); }
+  h1 { max-width: var(--reading); margin: 0 0 var(--space-5); font-family: var(--font-display); font-size: var(--size-40); line-height: 1.12; }
+  .error-page > p:not(.eyebrow) { max-width: var(--reading); color: var(--text-secondary); font-size: var(--size-18); }
+  .actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-8); }
+  .actions a { display: inline-flex; min-height: 2.75rem; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-4); border: 1px solid var(--border-default); border-radius: var(--radius-1); color: var(--action-primary); font-weight: 700; text-decoration: none; transition: background-color var(--duration-fast) var(--ease-smooth), border-color var(--duration-fast) var(--ease-smooth), transform var(--duration-fast) var(--ease-smooth); }
+  .actions a:hover { border-color: var(--action-primary); background: var(--action-subtle); transform: translateY(-1px); }
+  .actions .primary { border-color: var(--action-primary); background: var(--action-primary); color: var(--white); }.actions .primary:hover { background: var(--action-hover); color: var(--white); }
+  @media (max-width: 47.99rem) { .error-page { padding-block: var(--space-12); } h1 { font-size: var(--size-32); } .actions { align-items: stretch; flex-direction: column; }.actions a { justify-content: center; } }
+  @media (prefers-reduced-motion: reduce) { .actions a:hover { transform: none; } }
+</style>

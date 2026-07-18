@@ -1,0 +1,18 @@
+---
+import ArticleList from "../components/articles/ArticleList.astro";
+import CurrentFocus from "../components/home/CurrentFocus.astro";
+import EditorialHero from "../components/home/EditorialHero.astro";
+import CategoryDirectory from "../components/taxonomies/CategoryDirectory.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getHomePageModel } from "../lib/content/view-models";
+const model = await getHomePageModel();
+const { site, seo } = model;
+---
+<BaseLayout title={seo.title} description={seo.description} canonical={seo.canonical} image={seo.openGraph.image} jsonLd={seo.jsonLd} site={site}>
+  <EditorialHero featured={model.featured[0]} />
+  <CurrentFocus text={site.currentFocus} />
+  {model.featured.length > 1 && <section class="section shell"><div class="section-header"><h2 class="section-title">重点文章</h2><a class="link-arrow" href="/articles/">浏览全部 <span aria-hidden="true">→</span></a></div><ArticleList posts={model.featured.slice(1)} /></section>}
+  <section class="section shell"><div class="section-header"><h2 class="section-title">最新文章</h2><a class="link-arrow" href="/articles/">全部文章 <span aria-hidden="true">→</span></a></div><ArticleList posts={model.latest} /></section>
+  <section class="section shell"><div class="section-header"><div><p class="eyebrow">主题边界 / Categories</p><h2 class="section-title">从稳定主题开始浏览</h2></div><a class="link-arrow" href="/categories/">查看分类 <span aria-hidden="true">→</span></a></div><CategoryDirectory categories={model.categories} /></section>
+  {model.practiceNotes.length > 0 && <section class="section shell"><div class="section-header"><div><p class="eyebrow">实践记录 / Field notes</p><h2 class="section-title">在实践中留下证据</h2></div></div><ArticleList posts={model.practiceNotes} /></section>}
+</BaseLayout>

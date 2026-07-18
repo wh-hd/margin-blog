@@ -1,0 +1,7 @@
+---
+interface Tag { slug: string; name: string; count?: number; }
+interface Props { tags: Tag[]; title?: string; }
+const { tags, title = "相关标签" } = Astro.props;
+---
+{tags.length > 0 && <section class="related-tags" aria-labelledby="related-tags-title"><h2 id="related-tags-title">{title}</h2><ul class="chip-list">{tags.slice(0, 6).map((tag) => <li><a class="chip" href={`/tags/${tag.slug}/`}>#{tag.name}{typeof tag.count === "number" ? ` · ${tag.count}` : ""}</a></li>)}</ul></section>}
+<style>.related-tags { padding-block: var(--space-8); border-top: 1px solid var(--border-subtle); } h2 { margin: 0 0 var(--space-4); font-family: var(--font-display); font-size: var(--size-20); }</style>

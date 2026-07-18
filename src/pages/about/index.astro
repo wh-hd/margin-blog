@@ -1,0 +1,18 @@
+---
+import AboutSections from "../../components/about/AboutSections.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { buildContactViewModel, getAboutPageModel } from "../../lib/content/view-models";
+const model = await getAboutPageModel();
+const { site, seo } = model;
+const timeline = site.about.timeline.map((item) => ({ ...item, evidence: item.evidenceUrl ? { href: item.evidenceUrl, label: "查看证据" } : undefined }));
+const contact = buildContactViewModel(site);
+---
+<BaseLayout title={seo.title} description={seo.description} canonical={seo.canonical} image={seo.openGraph.image} jsonLd={seo.jsonLd} site={site}>
+  <div class="shell"><section class="about-intro editorial-grid"><div><p class="eyebrow">关于 / About</p><h1>关于侧注</h1></div><p>{site.about.intro}</p></section><AboutSections questions={site.about.questions} principles={site.about.principles} {timeline} contactText={contact.text} contactHref={contact.href} /></div>
+</BaseLayout>
+<style>
+  .about-intro { padding-block: var(--space-20); }.about-intro > div { grid-column: span 4; }.about-intro > p { grid-column: span 7; margin: 0; color: var(--text-secondary); font-family: var(--font-display); font-size: var(--size-20); line-height: 1.7; }
+  h1 { margin: 0; font-family: var(--font-display); font-size: var(--size-40); line-height: 1.12; }
+  @media (max-width: 63.99rem) { .about-intro > div { grid-column: span 3; }.about-intro > p { grid-column: span 5; } }
+  @media (max-width: 47.99rem) { .about-intro { padding-block: var(--space-12); }.about-intro > div, .about-intro > p { grid-column: auto; } h1 { font-size: var(--size-32); } }
+</style>

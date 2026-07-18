@@ -1,0 +1,26 @@
+---
+interface Props { brand?: string; positioning?: string; contactText?: string; contactHref?: string; }
+const { brand = "侧注 MARGIN", positioning = "把 AI、产品与创作中的判断，写在实践的页边。", contactText = "公开联系方式待作者确认。", contactHref } = Astro.props;
+const year = new Date().getUTCFullYear();
+---
+<footer class="site-footer">
+  <div class="shell footer-grid">
+    <section class="footer-identity" aria-labelledby="footer-brand"><h2 id="footer-brand">{brand}</h2><p>{positioning}</p></section>
+    <nav aria-label="页脚导航"><h2>浏览</h2><ul><li><a href="/">首页</a></li><li><a href="/articles/">文章</a></li><li><a href="/categories/">分类</a></li><li><a href="/about/">关于</a></li></ul></nav>
+    <section><h2>联系边界</h2><p>{contactText}</p>{contactHref && <a href={contactHref}>联系作者</a>}</section>
+    <p class="copyright">© {year} {brand}。内容权利说明待作者确认。</p>
+  </div>
+</footer>
+<style>
+  .site-footer { padding-block: var(--space-12); border-top: 1px solid var(--border-subtle); }
+  .footer-grid { display: grid; grid-template-columns: 6fr 3fr 3fr; gap: var(--space-8); }
+  h2 { margin: 0 0 var(--space-3); font-family: var(--font-display); font-size: var(--size-18); }
+  p { margin: 0; color: var(--text-secondary); font-size: var(--size-14); }
+  ul { margin: 0; padding: 0; list-style: none; }
+  a { display: inline-flex; min-height: 2.75rem; align-items: center; color: var(--text-secondary); font-size: var(--size-14); text-underline-offset: .2em; }
+  a:hover { color: var(--action-hover); }
+  .footer-identity p { max-width: 28rem; }
+  .copyright { grid-column: 1 / -1; padding-top: var(--space-6); border-top: 1px solid var(--border-subtle); }
+  @media (max-width: 63.99rem) { .footer-grid { grid-template-columns: 1fr 1fr; } .footer-identity { grid-column: 1 / -1; } }
+  @media (max-width: 47.99rem) { .site-footer { padding-block: var(--space-10); } .footer-grid { grid-template-columns: 1fr; } .footer-identity, .copyright { grid-column: auto; } }
+</style>

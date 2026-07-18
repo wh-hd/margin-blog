@@ -1,0 +1,5 @@
+---
+interface Props { children?: any; }
+---
+<div class="notice" role="note"><strong>内容待确认</strong><p><slot /></p></div>
+<style>.notice { padding: var(--space-5); border-inline-start: 2px solid var(--amber-700); background: var(--bg-subtle); }.notice strong { color: var(--amber-700); font-size: var(--size-14); }.notice p { margin: var(--space-2) 0 0; color: var(--text-secondary); }</style>

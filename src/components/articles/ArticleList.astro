@@ -1,0 +1,7 @@
+---
+import ArticleRow from "./ArticleRow.astro";
+import EmptyState from "../content/EmptyState.astro";
+interface Props { posts: any[]; showCategory?: boolean; emptyDescription?: string; }
+const { posts, showCategory = true, emptyDescription = "文章还在编辑台上。你可以先了解侧注 MARGIN 关注的问题。" } = Astro.props;
+---
+{posts.length > 0 ? <div class="article-list">{posts.map((post) => <ArticleRow {post} {showCategory} />)}</div> : <EmptyState title="文章仍在编辑中" description={emptyDescription} actionHref="/about/" actionLabel="前往关于页" />}

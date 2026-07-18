@@ -1,0 +1,8 @@
+---
+interface Props { title: string; description: string; actionHref?: string; actionLabel?: string; }
+const { title, description, actionHref, actionLabel } = Astro.props;
+---
+<section class="empty-state" aria-labelledby="empty-title">
+  <h2 id="empty-title">{title}</h2><p>{description}</p>
+  {actionHref && actionLabel && <a class="link-arrow" href={actionHref}>{actionLabel}<span aria-hidden="true">→</span></a>}
+</section>

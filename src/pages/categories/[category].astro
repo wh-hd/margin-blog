@@ -1,0 +1,19 @@
+---
+import ArticleList from "../../components/articles/ArticleList.astro";
+import RelatedTags from "../../components/taxonomies/RelatedTags.astro";
+import TaxonomyIntro from "../../components/taxonomies/TaxonomyIntro.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCategoryStaticPaths } from "../../lib/content/view-models";
+import type { CategoryPageModel } from "../../lib/content/types";
+export const getStaticPaths = getCategoryStaticPaths;
+interface Props { model: CategoryPageModel; }
+const { model } = Astro.props;
+const { site, seo, category, posts, featured, relatedTags } = model;
+---
+<BaseLayout title={seo.title} description={seo.description} canonical={seo.canonical} image={seo.openGraph.image} jsonLd={seo.jsonLd} site={site}>
+  <div class="shell"><TaxonomyIntro type="category" name={category.name} description={category.boundary} count={posts.length} /></div>
+  {featured && <section class="section shell"><p class="eyebrow">从这里开始 / Selected</p><h2 class="section-title"><a href={featured.href}>{featured.title}</a></h2><p class="feature-description">{featured.description}</p></section>}
+  <section class="section shell"><ArticleList {posts} showCategory={false} emptyDescription="这个分类的边界已经确定，相关文章仍在编辑中。" /></section>
+  {relatedTags.length > 0 && <div class="shell"><RelatedTags tags={relatedTags} /></div>}
+</BaseLayout>
+<style>.section-title a { text-underline-offset: .18em; }.section-title a:hover { color: var(--action-hover); }.feature-description { max-width: var(--reading); color: var(--text-secondary); font-size: var(--size-18); }</style>

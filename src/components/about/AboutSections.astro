@@ -1,0 +1,24 @@
+---
+import PendingContentNotice from "./PendingContentNotice.astro";
+interface TimelineItem { date: string; title: string; description: string; evidence?: { href: string; label: string }; }
+interface Props { questions?: string[]; principles?: string[]; timeline?: TimelineItem[]; contactText?: string; contactHref?: string; }
+const { questions = ["AI 参与产品开发后，哪些判断仍必须由人负责？", "怎样让内容工作流既可复用，又不牺牲作者的判断？", "独立产品如何用更少功能建立更明确的信任？"], principles = ["先记录证据，再总结方法。", "把失败尝试写进决策背景。", "用稳定的主题边界抵抗临时热点。", "宁可删掉空壳，也不伪造完整。"], timeline = [], contactText, contactHref } = Astro.props;
+---
+<section class="about-section" aria-labelledby="questions"><p class="eyebrow">正在追问 / Current questions</p><h2 id="questions">持续关注的问题</h2><ol class="number-list">{questions.map((question, index) => <li><span>{String(index + 1).padStart(2, "0")}</span><p>{question}</p></li>)}</ol></section>
+<section class="about-section" aria-labelledby="timeline"><p class="eyebrow">实践轨迹 / Practice</p><h2 id="timeline">从实践留下证据</h2>{timeline.length ? <ol class="timeline">{timeline.map((item) => <li><time>{item.date}</time><div><h3>{item.title}</h3><p>{item.description}</p></div>{item.evidence && <a href={item.evidence.href}>{item.evidence.label}</a>}</li>)}</ol> : <PendingContentNotice>个人实践轨迹待作者补充。</PendingContentNotice>}</section>
+<section class="about-section" aria-labelledby="principles"><p class="eyebrow">工作原则 / Principles</p><h2 id="principles">写作与实践的约束</h2><ol class="principles">{principles.map((principle) => <li>{principle}</li>)}</ol></section>
+<section class="about-section contact" aria-labelledby="contact"><p class="eyebrow">联系边界 / Contact</p><h2 id="contact">围绕内容，保持具体</h2>{contactText ? <><p>{contactText}</p>{contactHref && <a class="link-arrow" href={contactHref}>发起联系 <span aria-hidden="true">→</span></a>}</> : <PendingContentNotice>公开联系方式待作者补充。</PendingContentNotice>}</section>
+<style>
+  .about-section { padding-block: var(--space-16); border-top: 1px solid var(--border-subtle); }
+  h2 { margin: 0 0 var(--space-8); font-family: var(--font-display); font-size: var(--size-32); }
+  .number-list, .timeline, .principles { margin: 0; padding: 0; list-style: none; }
+  .number-list li { display: grid; grid-template-columns: 4rem minmax(0, 1fr); padding-block: var(--space-5); border-top: 1px solid var(--border-subtle); }
+  .number-list span { color: var(--action-primary); font-family: var(--font-mono); font-size: var(--size-14); }
+  .number-list p { margin: 0; font-family: var(--font-display); font-size: var(--size-20); }
+  .timeline li { display: grid; grid-template-columns: 2fr 8fr 2fr; gap: var(--space-6); padding-block: var(--space-5); border-top: 1px solid var(--border-subtle); }
+  .timeline time, .timeline a { font-size: var(--size-14); }
+  .timeline time { color: var(--text-muted); }.timeline h3 { margin: 0 0 var(--space-2); font-size: var(--size-18); }.timeline p { margin: 0; color: var(--text-secondary); }.timeline a { color: var(--action-primary); }
+  .principles { counter-reset: principle; }.principles li { counter-increment: principle; padding: var(--space-5) 0 var(--space-5) var(--space-10); border-top: 1px solid var(--border-subtle); font-family: var(--font-display); font-size: var(--size-20); }.principles li::before { content: counter(principle, decimal-leading-zero); float: left; margin-left: calc(var(--space-10) * -1); color: var(--action-primary); font-family: var(--font-mono); font-size: var(--size-14); }
+  .contact { margin-bottom: var(--space-16); padding-inline: var(--space-8); border-inline-start: 2px solid var(--action-primary); background: var(--bg-subtle); }.contact > p:not(.eyebrow) { color: var(--text-secondary); }
+  @media (max-width: 47.99rem) { .about-section { padding-block: var(--space-12); } h2 { font-size: var(--size-24); } .timeline li { grid-template-columns: 1fr; gap: var(--space-2); } .contact { padding-inline: var(--space-5); } }
+</style>

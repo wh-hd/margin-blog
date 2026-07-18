@@ -1,0 +1,30 @@
+---
+import EmptyState from "../content/EmptyState.astro";
+interface Category { slug: string; name: string; description?: string; boundary: string; count: number; representative?: { slug: string; href?: string; title: string }; }
+interface Props { categories: Category[]; }
+const { categories } = Astro.props;
+---
+{categories.length > 0 ? <ol class="directory">
+  {categories.map((category, index) => <li>
+    <span class="number">{String(index + 1).padStart(2, "0")}</span>
+    <div class="definition"><h2><a href={`/categories/${category.slug}/`}>{category.name}</a></h2><p>{category.boundary || category.description}</p></div>
+    <div class="representative">{category.representative ? <><span>代表文章</span><a href={category.representative.href ?? `/articles/${category.representative.slug}/`}>{category.representative.title}</a></> : <p>这个分类的边界已经确定，相关文章仍在编辑中。</p>}</div>
+    <div class="entry"><strong>{category.count} 篇文章</strong><a href={`/categories/${category.slug}/`}>进入「{category.name}」</a></div>
+  </li>)}
+</ol> : <EmptyState title="分类边界正在整理" description="分类边界正在整理。你仍可浏览全部文章。" actionHref="/articles/" actionLabel="浏览全部文章" />}
+<style>
+  .directory { margin: 0; padding: 0; border-bottom: 1px solid var(--border-subtle); list-style: none; }
+  li { display: grid; grid-template-columns: 1fr 4fr 5fr 2fr; gap: var(--space-6); padding-block: var(--space-8); border-top: 1px solid var(--border-subtle); }
+  .number { color: var(--action-primary); font-family: var(--font-mono); font-size: var(--size-14); }
+  h2 { margin: 0 0 var(--space-3); font-family: var(--font-display); font-size: var(--size-24); }
+  h2 a, .representative a, .entry a { text-underline-offset: .2em; }
+  h2 a:hover, .representative a:hover, .entry a:hover { color: var(--action-hover); }
+  p { margin: 0; color: var(--text-secondary); font-size: var(--size-14); }
+  .representative { display: flex; flex-direction: column; gap: var(--space-2); }
+  .representative span { color: var(--text-muted); font-size: var(--size-12); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+  .entry { display: flex; align-items: flex-start; flex-direction: column; gap: var(--space-3); }
+  .entry strong { color: var(--text-secondary); font-size: var(--size-14); }
+  .entry a { color: var(--action-primary); font-weight: 700; }
+  @media (max-width: 63.99rem) { li { grid-template-columns: 1fr 3fr 4fr; } .entry { grid-column: 2 / -1; flex-direction: row; justify-content: space-between; } }
+  @media (max-width: 47.99rem) { li { grid-template-columns: 1fr; gap: var(--space-4); } .entry { grid-column: auto; flex-direction: column; } }
+</style>

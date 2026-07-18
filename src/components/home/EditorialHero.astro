@@ -1,0 +1,63 @@
+---
+import type { PostSummary } from "../../lib/content/types";
+import AiParticleField from "./AiParticleField.astro";
+
+interface Props { featured?: PostSummary; }
+const { featured } = Astro.props;
+const dateText = featured ? new Intl.DateTimeFormat("zh-CN", { year: "numeric", month: "long", day: "numeric" }).format(new Date(featured.publishDate)) : "";
+---
+<section class="hero">
+  <div class="hero-inner shell editorial-grid">
+    <div class="hero-copy">
+      <p class="eyebrow">独立内容主场 / Independent notes</p>
+      <h1>侧注 <span>MARGIN</span></h1>
+      <p class="positioning">把 AI、产品与创作中的判断，写在实践的页边。</p>
+      <p class="explain">记录从想法、原型到上线之间，那些真正改变结果的判断。</p>
+      <div class="signal-note" aria-label="网站关注方向">
+        <span>AI × PRODUCT × CREATION</span>
+        <span>THINK / BUILD / WRITE</span>
+      </div>
+    </div>
+    <div class="hero-visual"><AiParticleField /></div>
+    <div class="hero-feature">
+      {featured ? <article>
+        <p class="eyebrow">本期重点 / Featured</p>
+        <h2><a href={featured.href ?? `/articles/${featured.slug}/`}>{featured.title}</a></h2>
+        <p>{featured.description}</p>
+        <div class="meta"><time datetime={new Date(featured.publishDate).toISOString()}>{dateText}</time><span> · {featured.readingTimeLabel ?? `约 ${featured.readingMinutes ?? 1} 分钟`}阅读</span></div>
+      </article> : <div class="hero-empty"><p>第一篇文章仍在编辑台上。你可以先了解这个博客关注的问题。</p><a class="link-arrow" href="/about/">前往关于页 <span aria-hidden="true">→</span></a></div>}
+    </div>
+  </div>
+</section>
+<style>
+  .hero { position: relative; min-height: calc(100vh - var(--header-height)); overflow: hidden; border-bottom: 1px solid var(--border-subtle); background: linear-gradient(180deg, rgb(251 250 247 / .94), var(--bg-canvas)); }
+  .hero::before { position: absolute; inset: 0; background: radial-gradient(circle at 74% 31%, rgb(134 218 204 / .12), transparent 34%), linear-gradient(90deg, transparent 49.9%, rgb(15 118 110 / .045) 50%, transparent 50.1%); content: ""; pointer-events: none; }
+  .hero-inner { position: relative; align-items: center; padding-block: clamp(var(--space-12), 7vw, var(--space-20)); row-gap: var(--space-8); }
+  .hero-copy { z-index: 2; grid-column: span 5; padding-inline-end: var(--space-8); }
+  .hero-visual { grid-column: span 7; }
+  .hero-feature { grid-column: 6 / -1; max-width: 42rem; margin-top: calc(var(--space-16) * -1); padding: var(--space-6) var(--space-8); border: 1px solid rgb(216 222 216 / .82); background: rgb(251 250 247 / .86); box-shadow: 0 1rem 3rem rgb(24 33 43 / .06); backdrop-filter: blur(14px); }
+  h1 { margin: 0 0 var(--space-6); font-family: var(--font-display); font-size: clamp(3.5rem, 7.4vw, 6.8rem); font-weight: 520; line-height: .88; letter-spacing: -.055em; }
+  h1 span { display: block; margin-top: var(--space-4); color: var(--action-primary); font-family: var(--font-ui); font-size: var(--size-14); font-weight: 700; letter-spacing: .34em; }
+  .positioning { max-width: 29rem; margin-bottom: var(--space-4); color: var(--ink-800); font-family: var(--font-display); font-size: clamp(var(--size-24), 2.3vw, var(--size-32)); line-height: 1.38; }
+  .explain, article > p { color: var(--text-secondary); }
+  .signal-note { display: grid; gap: .2rem; margin-top: var(--space-10); color: rgb(15 118 110 / .62); font-family: var(--font-mono); font-size: .625rem; letter-spacing: .14em; }
+  h2 { margin: 0 0 var(--space-3); font-family: var(--font-display); font-size: clamp(var(--size-24), 2.6vw, var(--size-32)); line-height: 1.16; }
+  h2 a { text-decoration: none; text-underline-offset: .16em; }
+  h2 a:hover { color: var(--action-hover); text-decoration: underline; }
+  article { animation: enter var(--duration-slow) var(--ease-smooth) both; }
+  @keyframes enter { from { opacity: 0; transform: translateY(var(--space-2)); } }
+  @media (max-width: 63.99rem) {
+    .hero { min-height: auto; }
+    .hero-copy, .hero-visual, .hero-feature { grid-column: 1 / -1; }
+    .hero-copy { max-width: 40rem; padding-inline-end: 0; }
+    .hero-feature { z-index: 2; max-width: none; margin-top: calc(var(--space-12) * -1); margin-inline: var(--space-6); }
+  }
+  @media (max-width: 47.99rem) {
+    .hero-inner { padding-block: var(--space-12); }
+    h1 { font-size: clamp(3rem, 18vw, 5rem); }
+    .positioning { font-size: var(--size-20); }
+    .signal-note { margin-top: var(--space-6); }
+    .hero-feature { margin: calc(var(--space-8) * -1) 0 0; padding: var(--space-5); }
+  }
+  @media (prefers-reduced-motion: reduce) { article { animation: none; } }
+</style>

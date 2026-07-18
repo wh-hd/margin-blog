@@ -1,0 +1,15 @@
+node_modules/
+node_modules.corrupt-backup/
+package-lock.corrupt-backup.json
+dist/
+.astro/
+.wrangler/
+coverage/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+Thumbs.db
+参考视频/
+outputs/

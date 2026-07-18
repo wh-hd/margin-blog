@@ -1,0 +1,25 @@
+---
+import { Image } from "astro:assets";
+interface Props { post: any; }
+const { post } = Astro.props;
+const published = new Date(post.publishDate);
+const updated = post.updatedDate ? new Date(post.updatedDate) : undefined;
+const format = (date: Date) => new Intl.DateTimeFormat("zh-CN", { year: "numeric", month: "long", day: "numeric" }).format(date);
+const reading = `${post.readingTimeLabel ?? `约 ${post.readingMinutes ?? 1} 分钟`}阅读`;
+---
+<header class="article-header shell">
+  <div class="reading-column">
+    <a class="category" href={`/categories/${post.category.slug}/`}>{post.category.name}</a>
+    <h1>{post.title}</h1><p class="description">{post.description}</p>
+    <p class="meta"><time datetime={published.toISOString()}>{format(published)}</time>{updated && <><span> · 更新于 </span><time datetime={updated.toISOString()}>{format(updated)}</time></>}<span> · {reading}</span></p>
+  </div>
+  {post.cover && <figure><Image src={post.cover.src} alt={post.cover.alt} widths={[640, 960]} sizes="(max-width: 768px) calc(100vw - 32px), 960px" loading="eager" fetchpriority="high" /></figure>}
+</header>
+<style>
+  .article-header { padding-block: var(--space-20) var(--space-12); }
+  .category { display: inline-flex; min-height: 2.75rem; align-items: center; color: var(--action-primary); font-size: var(--size-14); font-weight: 800; text-underline-offset: .2em; }
+  h1 { margin: var(--space-3) 0 var(--space-5); font-family: var(--font-display); font-size: var(--size-40); line-height: 1.12; }
+  .description { color: var(--text-secondary); font-family: var(--font-display); font-size: var(--size-20); line-height: 1.6; }
+  figure { max-width: 60rem; margin: var(--space-10) 0 0; } img { width: 100%; height: auto; border-radius: var(--radius-1); }
+  @media (max-width: 47.99rem) { .article-header { padding-block: var(--space-12) var(--space-8); } h1 { font-size: var(--size-32); } .description { font-size: var(--size-18); } }
+</style>

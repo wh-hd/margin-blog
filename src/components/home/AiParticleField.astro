@@ -1,0 +1,221 @@
+---
+interface Props {
+  label?: string;
+}
+
+const { label = "AI 语义场：从噪声中提取结构" } = Astro.props;
+const particles = Array.from({ length: 118 }, (_, index) => {
+  const angle = index * 2.3999632297;
+  const radius = 8 + Math.sqrt(index / 118) * 43;
+  const x = 52 + Math.cos(angle) * radius * (0.8 + (index % 7) * 0.025);
+  const y = 49 + Math.sin(angle) * radius * 0.78;
+  const size = 0.55 + (index % 9) * 0.12;
+  const opacity = 0.16 + (index % 11) * 0.045;
+  const delay = -(index % 17) * 0.21;
+  return { x, y, size, opacity, delay };
+});
+---
+<div class="ai-field" role="img" aria-label={label} data-ai-field>
+  <div class="field-grid" aria-hidden="true"></div>
+  <div class="pointer-halo" aria-hidden="true"></div>
+  <svg class="particle-map" viewBox="0 0 100 100" aria-hidden="true">
+    <defs>
+      <radialGradient id="field-halo">
+        <stop offset="0" stop-color="#8ce3d4" stop-opacity=".52" />
+        <stop offset=".48" stop-color="#7fc8c5" stop-opacity=".15" />
+        <stop offset="1" stop-color="#fbfaf7" stop-opacity="0" />
+      </radialGradient>
+      <linearGradient id="signal-line" x1="0" y1="0" x2="1" y2="1">
+        <stop stop-color="#0f766e" stop-opacity=".08" />
+        <stop offset=".55" stop-color="#0f766e" stop-opacity=".52" />
+        <stop offset="1" stop-color="#84d8cb" stop-opacity=".05" />
+      </linearGradient>
+      <filter id="soft-glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="1.4" />
+      </filter>
+    </defs>
+    <circle cx="52" cy="49" r="45" fill="url(#field-halo)" />
+    <g class="orbits">
+      <ellipse cx="52" cy="49" rx="36" ry="19" transform="rotate(-18 52 49)" />
+      <ellipse cx="52" cy="49" rx="26" ry="37" transform="rotate(31 52 49)" />
+      <path d="M8 61 C 27 30, 63 28, 96 42" />
+      <path d="M15 76 C 38 56, 65 58, 91 22" />
+    </g>
+    <g class="connections">
+      <path d="M20 63 L36 45 L52 49 L67 34 L83 52" />
+      <path d="M28 27 L43 40 L52 49 L72 68" />
+      <path d="M17 50 L38 57 L52 49 L76 44 L91 61" />
+    </g>
+    <circle class="core-glow" cx="52" cy="49" r="9" fill="#48b9aa" filter="url(#soft-glow)" />
+    <circle class="core" cx="52" cy="49" r="2.2" fill="#0f766e" />
+    <g class="particles">
+      {particles.map(({ x, y, size, opacity, delay }) => (
+        <circle cx={x} cy={y} r={size} fill="#0f766e" data-x={x} data-y={y} style={`--particle-opacity:${opacity};--delay:${delay}s`} />
+      ))}
+    </g>
+  </svg>
+  <div class="field-label" aria-hidden="true">
+    <span>SEMANTIC FIELD</span>
+    <span>118 SIGNALS</span>
+    <span>∞ ITERATIONS</span>
+  </div>
+</div>
+
+<script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+
+  document.querySelectorAll<HTMLElement>('[data-ai-field]').forEach((field) => {
+    if (reduceMotion.matches || !finePointer.matches) return;
+
+    const map = field.querySelector<SVGSVGElement>('.particle-map');
+    const halo = field.querySelector<HTMLElement>('.pointer-halo');
+    const particles = Array.from(field.querySelectorAll<SVGCircleElement>('.particles circle')).map((node) => ({
+      node,
+      x: Number(node.dataset.x),
+      y: Number(node.dataset.y),
+      currentX: 0,
+      currentY: 0,
+      targetX: 0,
+      targetY: 0,
+    }));
+
+    if (!map || !halo) return;
+
+    let pointerX = 50;
+    let pointerY = 50;
+    let parallaxX = 0;
+    let parallaxY = 0;
+    let targetParallaxX = 0;
+    let targetParallaxY = 0;
+    let active = false;
+    let frame = 0;
+
+    const render = () => {
+      let moving = false;
+      parallaxX += (targetParallaxX - parallaxX) * 0.075;
+      parallaxY += (targetParallaxY - parallaxY) * 0.075;
+      map.style.transform = `translate3d(${parallaxX}px, ${parallaxY}px, 0)`;
+
+      for (const particle of particles) {
+        const dx = particle.x - pointerX;
+        const dy = particle.y - pointerY;
+        const distance = Math.hypot(dx, dy);
+        const influence = active ? Math.max(0, 1 - distance / 19) : 0;
+        const force = influence * influence * 5.6;
+        const safeDistance = distance || 1;
+        particle.targetX = (dx / safeDistance) * force;
+        particle.targetY = (dy / safeDistance) * force;
+        particle.currentX += (particle.targetX - particle.currentX) * 0.12;
+        particle.currentY += (particle.targetY - particle.currentY) * 0.12;
+        particle.node.style.translate = `${particle.currentX}px ${particle.currentY}px`;
+        if (Math.abs(particle.targetX - particle.currentX) > 0.015 || Math.abs(particle.targetY - particle.currentY) > 0.015) moving = true;
+      }
+
+      if (active || moving || Math.abs(targetParallaxX - parallaxX) > 0.02 || Math.abs(targetParallaxY - parallaxY) > 0.02) {
+        frame = requestAnimationFrame(render);
+      } else {
+        frame = 0;
+      }
+    };
+
+    const requestRender = () => {
+      if (!frame) frame = requestAnimationFrame(render);
+    };
+
+    field.addEventListener('pointermove', (event) => {
+      const rect = field.getBoundingClientRect();
+      const normalizedX = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width));
+      const normalizedY = Math.min(1, Math.max(0, (event.clientY - rect.top) / rect.height));
+      pointerX = normalizedX * 100;
+      pointerY = normalizedY * 100;
+      targetParallaxX = (normalizedX - 0.5) * -8;
+      targetParallaxY = (normalizedY - 0.5) * -6;
+      halo.style.setProperty('--pointer-x', `${normalizedX * 100}%`);
+      halo.style.setProperty('--pointer-y', `${normalizedY * 100}%`);
+      active = true;
+      field.dataset.interactive = 'true';
+      requestRender();
+    }, { passive: true });
+
+    field.addEventListener('pointerleave', () => {
+      active = false;
+      targetParallaxX = 0;
+      targetParallaxY = 0;
+      field.dataset.interactive = 'false';
+      requestRender();
+    }, { passive: true });
+  });
+</script>
+
+<style>
+  .ai-field {
+    position: relative;
+    min-height: 34rem;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--action-primary) 20%, var(--border-subtle));
+    background:
+      radial-gradient(circle at 64% 42%, rgb(226 247 242 / .85), transparent 34%),
+      linear-gradient(145deg, rgb(255 255 255 / .82), rgb(242 246 241 / .5));
+    box-shadow: 0 1.75rem 5rem rgb(24 33 43 / .08), inset 0 1px 0 rgb(255 255 255 / .9);
+    isolation: isolate;
+  }
+  .ai-field::before {
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.24'/%3E%3C/svg%3E");
+    content: "";
+    mix-blend-mode: multiply;
+    opacity: .12;
+    pointer-events: none;
+  }
+  .ai-field::after {
+    position: absolute;
+    z-index: 3;
+    inset: 0;
+    background: linear-gradient(90deg, rgb(251 250 247 / .82), transparent 25%, transparent 76%, rgb(251 250 247 / .38));
+    content: "";
+    pointer-events: none;
+  }
+  .field-grid {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(rgb(15 118 110 / .055) 1px, transparent 1px), linear-gradient(90deg, rgb(15 118 110 / .055) 1px, transparent 1px);
+    background-size: 2.75rem 2.75rem;
+    mask-image: radial-gradient(circle at 58% 48%, black, transparent 74%);
+  }
+  .pointer-halo {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    background: radial-gradient(circle 8rem at var(--pointer-x, 52%) var(--pointer-y, 49%), rgb(101 209 191 / .2), transparent 72%);
+    opacity: 0;
+    transition: opacity var(--duration-base) var(--ease-smooth);
+    pointer-events: none;
+  }
+  .ai-field[data-interactive="true"] .pointer-halo { opacity: 1; }
+  .particle-map { position: absolute; z-index: 1; inset: 2% -3% 4% 3%; width: 100%; height: 100%; overflow: visible; will-change: transform; }
+  .orbits { fill: none; stroke: url(#signal-line); stroke-width: .22; stroke-dasharray: 1.6 2.4; }
+  .connections { fill: none; stroke: #0f766e; stroke-width: .12; opacity: .24; }
+  .core-glow { opacity: .2; animation: core-pulse 4.8s ease-in-out infinite; }
+  .particles circle { opacity: var(--particle-opacity); transform-box: fill-box; transform-origin: center; animation: signal 4.2s ease-in-out var(--delay) infinite; will-change: translate; }
+  .field-label {
+    position: absolute;
+    z-index: 4;
+    right: var(--space-4);
+    bottom: var(--space-4);
+    display: grid;
+    gap: .2rem;
+    color: rgb(15 118 110 / .62);
+    font-family: var(--font-mono);
+    font-size: .625rem;
+    letter-spacing: .12em;
+    text-align: end;
+  }
+  @keyframes signal { 0%, 100% { opacity: calc(var(--particle-opacity) * .55); transform: scale(.75); } 50% { opacity: var(--particle-opacity); transform: scale(1.25); } }
+  @keyframes core-pulse { 0%, 100% { opacity: .12; transform: scale(.8); } 50% { opacity: .3; transform: scale(1.18); } }
+  @media (max-width: 63.99rem) { .ai-field { min-height: 25rem; } }
+  @media (max-width: 47.99rem) { .ai-field { min-height: 20rem; } .field-label { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .particles circle, .core-glow { animation: none; } }
+</style>
