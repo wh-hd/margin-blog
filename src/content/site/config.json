@@ -1,17 +1,13 @@
 {
-  "name": "内容待确认：作者姓名",
-  "brand": "侧注 MARGIN",
-  "positioning": "把 AI、产品与创作中的判断，写在实践的页边。",
-  "description": "一个围绕 AI、产品与独立创作的中文个人博客，记录从想法、原型到上线之间真正改变结果的判断。",
-  "siteUrl": "https://margin-blog.pages.dev",
-  "defaultOgImage": "/og/default.svg",
-  "locale": "zh-CN",
-  "social": [],
   "contact": {
     "status": "pending",
     "notice": "内容待确认：公开联系方式待作者补充。"
   },
-  "currentFocus": "示例内容：整理 AI 辅助开发中的可复用判断，重写旧稿，并验证静态内容工作流的发布边界。",
+  "defaultOgImage": "/og/default.svg",
+  "brand": "侧注 MARGIN",
+  "siteUrl": "https://margin-blog.pages.dev",
+  "name": "温辉",
+  "social": [],
   "about": {
     "intro": "侧注 MARGIN 是一个围绕 AI、产品与独立创作的中文个人博客。这里优先记录实践中可复用的判断，也保留那些没有奏效的尝试。当前内容为可替换示例，不代表作者真实经历。",
     "questions": [
@@ -26,5 +22,9 @@
     ],
     "timeline": [],
     "timelineNotice": "内容待确认：个人实践轨迹待作者补充。"
-  }
+  },
+  "positioning": "把 AI、产品与创作中的判断，写在实践的页边。",
+  "locale": "zh-CN",
+  "description": "一个围绕 AI、产品与独立创作的中文个人博客，记录从想法、原型到上线之间真正改变结果的判断。",
+  "currentFocus": "示例内容：整理 AI 辅助开发中的可复用判断，重写旧稿，并验证静态内容工作流的发布边界。"
 }
