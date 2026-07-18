@@ -2,10 +2,30 @@
 // Cloudflare Pages Function — GitHub OAuth proxy for Decap CMS.
 // Handles both legs of the OAuth flow in a single endpoint:
 //   1) GET /oauth                -> redirect browser to GitHub authorize (carries admin URL in `state`)
-//   2) GET /oauth?code=...&state -> exchange code for token, redirect back to admin with #access_token
+//   2) GET /oauth?code=...&state -> exchange code for token, return a page that posts the token back to Decap via window.opener
 // Requires two Production environment variables in the Cloudflare Pages project:
 //   GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET
 const SITE_URL = "https://margin-blog.pages.dev";
+
+const SUCCESS_HTML = (token: string) => `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Authenticating Decap CMS...</title>
+</head>
+<body>
+<script>
+  (function () {
+    var payload = JSON.stringify({ token: ${JSON.stringify(token)}, provider: "github" });
+    if (window.opener) {
+      window.opener.postMessage(payload, "*");
+    }
+    window.close();
+  })();
+</script>
+<p>Authentication complete. You can close this window.</p>
+</body>
+</html>`;
 
 export const onRequest = async (context: any) => {
   const { request, env } = context;
@@ -14,10 +34,6 @@ export const onRequest = async (context: any) => {
 
   // Step 2: GitHub redirected back with ?code=...&state=<encoded admin redirect>
   if (code) {
-    const adminRedirect = url.searchParams.get("state")
-      ? decodeURIComponent(url.searchParams.get("state") as string)
-      : SITE_URL + "/admin/";
-
     const tokenResp = await fetch("https://github.com/login/oauth/access_token", {
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
@@ -32,12 +48,8 @@ export const onRequest = async (context: any) => {
     if (!accessToken) {
       return new Response("GitHub OAuth 失败：" + JSON.stringify(tokenJson), { status: 400 });
     }
-    const sep = adminRedirect.includes("#") ? "&" : "#";
-    return new Response(null, {
-      status: 302,
-      headers: {
-        Location: adminRedirect + sep + "access_token=" + accessToken + "&token_type=bearer",
-      },
+    return new Response(SUCCESS_HTML(accessToken), {
+      headers: { "Content-Type": "text/html; charset=utf-8" },
     });
   }
 
