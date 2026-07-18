@@ -16,11 +16,18 @@ const SUCCESS_HTML = (token: string) => `<!DOCTYPE html>
 <body>
 <script>
   (function () {
-    var payload = JSON.stringify({ token: ${JSON.stringify(token)}, provider: "github" });
-    if (window.opener) {
-      window.opener.postMessage(payload, "*");
+    var token = ${JSON.stringify(token)};
+    var payload = JSON.stringify({ token: token, provider: "github" });
+    function receiveMessage(e) {
+      if (e.data !== "authorizing:github") return;
+      if (!e.source) return;
+      e.source.postMessage(payload, e.origin || "*");
+      window.close();
     }
-    window.close();
+    window.addEventListener("message", receiveMessage, false);
+    if (window.opener) {
+      window.opener.postMessage("authorizing:github", "*");
+    }
   })();
 </script>
 <p>Authentication complete. You can close this window.</p>
