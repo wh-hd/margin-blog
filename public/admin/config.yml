@@ -1,0 +1,97 @@
+backend:
+  name: github
+  repo: wh-hd/margin-blog
+  branch: main
+  site_url: https://margin-blog.pages.dev
+  base_url: https://margin-blog.pages.dev
+  auth_endpoint: /oauth
+  scope: repo
+
+# 保存即直接发布到 main 并触发重新部署
+publish_mode: simple
+
+# 图片上传目录（相对于仓库根；可在正文中插图）
+media_folder: "src/content/posts/media"
+public_folder: "src/content/posts/media"
+
+locale: "zh-CN"
+
+collections:
+  - name: posts
+    label: "文章"
+    label_singular: "文章"
+    folder: "src/content/posts"
+    slug: "{{slug}}"
+    create: true
+    description: "撰写或编辑文章。保存并发布后，站点会自动重新部署。"
+    fields:
+      - { name: title, label: "标题", widget: string, required: true, minlength: 1, maxlength: 80, hint: "1–80 字" }
+      - { name: description, label: "摘要", widget: string, required: true, minlength: 40, maxlength: 180, hint: "40–180 字，用于列表与分享卡片" }
+      - { name: publishDate, label: "发布日期", widget: datetime, required: true, format: "YYYY-MM-DD HH:mm", hint: "设为未来时间可当作定时发布（届时才上线）" }
+      - { name: category, label: "分类", widget: select, required: true, options: [ai-practice, product-thinking, indie-creation] }
+      - name: tags
+        label: "标签"
+        widget: list
+        required: true
+        summary: "{{fields.tag}}"
+        field: { name: tag, label: "标签", widget: select, options: [ai-workflow, decision-log, content-workflow, static-site, scope-control, maintainability] }
+      - { name: draft, label: "草稿（保存但不发布）", widget: boolean, default: false }
+      - { name: featured, label: "首页精选", widget: boolean, default: false }
+      - { name: body, label: "正文", widget: markdown, required: true, hint: "支持 Markdown，可在正文中插入图片" }
+
+  - name: site
+    label: "站点与关于我"
+    files:
+      - name: site-config
+        label: "站点设置"
+        file: "src/content/site/config.json"
+        description: "修改你的姓名、品牌、关于我、联系方式等。保存即生效。"
+        fields:
+          - { name: name, label: "作者姓名", widget: string, required: true, maxlength: 80 }
+          - { name: brand, label: "品牌名 / 站名", widget: string, required: true, maxlength: 80 }
+          - { name: positioning, label: "一句话定位", widget: string, required: true, maxlength: 120 }
+          - { name: description, label: "站点描述", widget: string, required: true, minlength: 40, maxlength: 180 }
+          - { name: siteUrl, label: "站点网址", widget: string, required: true, hint: "绑定自定义域名后改这里" }
+          - { name: defaultOgImage, label: "默认分享图路径", widget: string, required: true, hint: "一般不改" }
+          - { name: locale, label: "语言", widget: string, required: true, hint: "固定 zh-CN" }
+          - name: social
+            label: "社交链接"
+            widget: list
+            field:
+              name: item
+              widget: object
+              fields:
+                - { name: label, label: "名称", widget: string, required: true }
+                - { name: url, label: "链接", widget: string, required: true }
+          - { name: currentFocus, label: "当前关注", widget: string, required: true, maxlength: 240 }
+          - name: contact
+            label: "联系方式"
+            widget: object
+            fields:
+              - { name: status, label: "状态", widget: select, required: true, options: [confirmed, private, pending], hint: "confirmed=已公开（需填邮箱或网站）；private=不公开；pending=待补充" }
+              - { name: email, label: "邮箱", widget: string, required: false }
+              - { name: website, label: "网站", widget: string, required: false }
+              - { name: notice, label: "待办说明", widget: string, required: false, maxlength: 120 }
+          - name: about
+            label: "关于我"
+            widget: object
+            fields:
+              - { name: intro, label: "自我介绍", widget: text, required: true, minlength: 40, maxlength: 500 }
+              - name: questions
+                label: "持续关注的问题"
+                widget: list
+                field: { name: question, label: "问题", widget: string, required: true, maxlength: 180 }
+              - name: principles
+                label: "工作原则"
+                widget: list
+                field: { name: principle, label: "原则", widget: string, required: true, maxlength: 180 }
+              - name: timeline
+                label: "实践轨迹"
+                widget: list
+                field:
+                  name: item
+                  widget: object
+                  fields:
+                    - { name: date, label: "日期", widget: string, required: true, maxlength: 40 }
+                    - { name: title, label: "标题", widget: string, required: true, maxlength: 100 }
+                    - { name: description, label: "描述", widget: string, required: true, maxlength: 300 }
