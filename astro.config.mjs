@@ -1,7 +1,7 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
-const site = 'https://example.com'; // 发布前替换为作者确认的正式域名，并同步 site/config.json。
+const site = 'https://margin-blog.pages.dev'; // 当前生产地址为 Cloudflare Pages 子域；购买自定义域名后替换并重建。
 
 export default defineConfig({
   site,
