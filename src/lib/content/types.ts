@@ -10,6 +10,17 @@ export interface TaxonomyRef {
   boundary: string;
 }
 
+export interface SiteSocialLink {
+  label: string;
+  url: AbsoluteUrl;
+}
+
+export interface SiteAnnouncement {
+  text: string;
+  link?: string;
+  linkLabel?: string;
+}
+
 export interface ImageViewModel {
   src: unknown;
   alt: string;
@@ -74,7 +85,8 @@ export interface SiteConfig {
   siteUrl: AbsoluteUrl;
   defaultOgImage: string;
   locale: 'zh-CN';
-  social: Array<{ label: string; url: AbsoluteUrl }>;
+  social: SiteSocialLink[];
+  announcement?: SiteAnnouncement;
   contact: ContactConfig;
   currentFocus: string;
   about: {
@@ -122,6 +134,7 @@ export interface HomePageModel {
   latest: PostSummary[];
   categories: CategorySummary[];
   practiceNotes: PostSummary[];
+  announcement?: SiteAnnouncement;
   seo: SeoViewModel;
 }
 
@@ -180,5 +193,30 @@ export interface ArchivePageModel {
 
 export interface AboutPageModel {
   site: SiteConfig;
+  seo: SeoViewModel;
+}
+
+export interface LinkItem {
+  name: string;
+  url: AbsoluteUrl;
+  description?: string;
+  avatar?: string;
+}
+
+export interface LinksPageModel {
+  site: SiteConfig;
+  links: LinkItem[];
+  seo: SeoViewModel;
+}
+
+export interface SaysPageModel {
+  site: SiteConfig;
+  entries: CollectionEntry<'says'>[];
+  seo: SeoViewModel;
+}
+
+export interface LogsPageModel {
+  site: SiteConfig;
+  entries: CollectionEntry<'logs'>[];
   seo: SeoViewModel;
 }

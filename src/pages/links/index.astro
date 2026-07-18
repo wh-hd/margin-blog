@@ -1,0 +1,32 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getLinksPageModel } from "../../lib/content/view-models";
+const model = await getLinksPageModel();
+const { site, links, seo } = model;
+---
+<BaseLayout title={seo.title} description={seo.description} canonical={seo.canonical} image={seo.openGraph.image} jsonLd={seo.jsonLd} site={site}>
+  <section class="section shell">
+    <div class="section-header"><div><p class="eyebrow">友链 / Friends</p><h1 class="section-title">互相链接的朋友站点</h1></div></div>
+    <ul class="links-grid">
+      {links.map(({ name, url, description, avatar }) => (
+        <li class="link-card">
+          <a class="link-main" href={url} target="_blank" rel="noopener noreferrer">
+            {avatar && <img class="link-avatar" src={avatar} alt={name} width="48" height="48" loading="lazy" />}
+            <span class="link-name">{name}</span>
+          </a>
+          {description && <p class="link-desc">{description}</p>}
+        </li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .links-grid { list-style: none; margin: var(--space-6) 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); gap: var(--space-4); }
+  .link-card { padding: var(--space-4); border: 1px solid var(--border-subtle); border-radius: 0.75rem; background: var(--bg-canvas); transition: border-color var(--duration-fast) var(--ease-smooth), transform var(--duration-fast) var(--ease-smooth); }
+  .link-card:hover { border-color: var(--action-primary); transform: translateY(-2px); }
+  .link-main { display: flex; align-items: center; gap: var(--space-3); text-decoration: none; color: var(--text-primary); }
+  .link-avatar { border-radius: 999px; object-fit: cover; }
+  .link-name { font-size: var(--size-16); font-weight: 700; }
+  .link-desc { margin: var(--space-2) 0 0; color: var(--text-secondary); font-size: var(--size-13); }
+</style>

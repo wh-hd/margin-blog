@@ -1,0 +1,40 @@
+---
+import { render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getLogsPageModel } from "../../lib/content/view-models";
+const model = await getLogsPageModel();
+const { site, entries, seo } = model;
+const rendered = await Promise.all(entries.map(async (entry) => {
+  const { Content } = await render(entry);
+  return { entry, Content };
+}));
+const dateText = (d: Date) => new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }).format(d);
+---
+<BaseLayout title={seo.title} description={seo.description} canonical={seo.canonical} image={seo.openGraph.image} jsonLd={seo.jsonLd} site={site}>
+  <section class="section shell">
+    <div class="section-header"><div><p class="eyebrow">日志 / Logs</p><h1 class="section-title">项目与实践的轨迹</h1></div></div>
+    <ul class="logs-list">
+      {rendered.map(({ entry, Content }) => (
+        <li class="log-item">
+          <div class="log-meta">
+            <time datetime={entry.data.publishDate.toISOString()}>{dateText(entry.data.publishDate)}</time>
+            {entry.data.category && <span class="log-cat">{entry.data.category}</span>}
+          </div>
+          <h2 class="log-title">{entry.data.title}</h2>
+          <div class="log-body"><Content /></div>
+        </li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .logs-list { list-style: none; margin: var(--space-6) 0 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-5); }
+  .log-item { padding: var(--space-4) var(--space-5); border: 1px solid var(--border-subtle); border-radius: 0.75rem; background: var(--bg-canvas); }
+  .log-meta { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-2); color: var(--text-secondary); font-size: var(--size-13); }
+  .log-cat { padding: 2px var(--space-2); border-radius: 999px; background: color-mix(in srgb, var(--action-primary) 12%, transparent); color: var(--action-hover); font-weight: 650; }
+  .log-title { margin: 0 0 var(--space-2); font-family: var(--font-display); font-size: var(--size-20); }
+  .log-body { color: var(--text-primary); font-size: var(--size-15); line-height: 1.7; }
+  .log-body :global(p) { margin: 0 0 var(--space-2); }
+  .log-body :global(p:last-child) { margin-bottom: 0; }
+</style>

@@ -4,8 +4,11 @@ import { buildSeoViewModel } from '@/lib/seo/view-model';
 import { resolveCanonical } from '@/lib/routing/canonical';
 import {
   getCategoryDirectory,
+  getLinks,
   getPostBySlug,
+  getPublishedLogEntries,
   getPublishedPosts,
+  getPublishedSayEntries,
   getRelatedPosts,
   getRelatedTagsForCategory,
   getRelatedTagsForTag,
@@ -14,13 +17,15 @@ import {
 } from './queries';
 import type {
   AboutPageModel,
-  ArticlePageModel,
+  ArchivePageModel,
   ArticlesPageModel,
   CategoriesPageModel,
   CategoryPageModel,
   HomePageModel,
+  LinksPageModel,
+  LogsPageModel,
+  SaysPageModel,
   TagPageModel,
-  ArchivePageModel,
 } from './types';
 
 const pageTitle = (page: string, brand: string) => `${page}｜${brand}`;
@@ -38,6 +43,7 @@ export async function getHomePageModel(): Promise<HomePageModel> {
     latest,
     categories,
     practiceNotes,
+    ...(site.announcement ? { announcement: site.announcement } : {}),
     seo: buildSeoViewModel({
       title: `${site.brand}｜${site.positioning}`,
       description: site.description,
@@ -183,4 +189,31 @@ export async function getTagStaticPaths(): Promise<Array<{ params: { tag: string
     if (!model) throw new Error(`白名单标签无法生成页面模型：${slug}`);
     return { params: { tag: slug }, props: { model } };
   }));
+}
+
+export async function getLinksPageModel(): Promise<LinksPageModel> {
+  const [site, links] = await Promise.all([getSiteConfig(), getLinks()]);
+  return {
+    site,
+    links,
+    seo: buildSeoViewModel({ title: pageTitle('友链', site.brand), description: '互相链接的朋友站点。', path: '/links/', site }),
+  };
+}
+
+export async function getSaysPageModel(): Promise<SaysPageModel> {
+  const [site, entries] = await Promise.all([getSiteConfig(), getPublishedSayEntries()]);
+  return {
+    site,
+    entries,
+    seo: buildSeoViewModel({ title: pageTitle('说说', site.brand), description: '随手记下关于创作、工具与判断的短想法。', path: '/says/', site }),
+  };
+}
+
+export async function getLogsPageModel(): Promise<LogsPageModel> {
+  const [site, entries] = await Promise.all([getSiteConfig(), getPublishedLogEntries()]);
+  return {
+    site,
+    entries,
+    seo: buildSeoViewModel({ title: pageTitle('日志', site.brand), description: '按时间记录项目与公开实践的轨迹。', path: '/logs/', site }),
+  };
 }

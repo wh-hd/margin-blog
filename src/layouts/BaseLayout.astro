@@ -29,8 +29,8 @@ const contact = site ? buildContactViewModel(site) : undefined;
     <SeoHead {title} {description} {canonical} {image} {type} {noindex} {jsonLd} />
   </head>
   <body>
-    <SiteHeader currentPath={Astro.url.pathname} brand={site?.brand} />
+    <SiteHeader currentPath={Astro.url.pathname} brand={site?.brand} social={site?.social} />
     <main id="main-content"><slot /></main>
-    <SiteFooter brand={site?.brand} positioning={site?.positioning} contactText={contact?.text} contactHref={contact?.href} />
+    <SiteFooter brand={site?.brand} positioning={site?.positioning} contactText={contact?.text} contactHref={contact?.href} social={site?.social} />
   </body>
 </html>

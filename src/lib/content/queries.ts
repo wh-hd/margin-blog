@@ -4,6 +4,7 @@ import { isPostPublished } from './publication';
 import { calculateReadingTime } from './reading-time';
 import type {
   CategorySummary,
+  LinkItem,
   PostDetail,
   PostSummary,
   RelatedTag,
@@ -214,4 +215,32 @@ export async function getRelatedTagsForTag(tagSlug: string, limit = 6): Promise<
     .filter(({ count }) => count > 0)
     .sort((left, right) => right.count - left.count || left.slug.localeCompare(right.slug, 'en'))
     .slice(0, limit);
+}
+
+export async function getLinks(): Promise<LinkItem[]> {
+  const entries = await getCollection('links');
+  return entries
+    .map((entry) => ({
+      name: entry.data.name,
+      url: entry.data.url,
+      ...(entry.data.description ? { description: entry.data.description } : {}),
+      ...(entry.data.avatar ? { avatar: entry.data.avatar } : {}),
+    }))
+    .sort((left, right) => left.name.localeCompare(right.name, 'zh'));
+}
+
+export async function getPublishedSayEntries(): Promise<CollectionEntry<'says'>[]> {
+  const entries = await getCollection('says');
+  const now = new Date();
+  return entries
+    .filter(({ data }) => isPostPublished(data, now))
+    .sort((left, right) => right.data.publishDate.getTime() - left.data.publishDate.getTime());
+}
+
+export async function getPublishedLogEntries(): Promise<CollectionEntry<'logs'>[]> {
+  const entries = await getCollection('logs');
+  const now = new Date();
+  return entries
+    .filter(({ data }) => isPostPublished(data, now))
+    .sort((left, right) => right.data.publishDate.getTime() - left.data.publishDate.getTime());
 }

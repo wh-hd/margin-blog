@@ -9,6 +9,11 @@
   "social": [
     { "label": "GitHub", "url": "https://github.com/wh-hd" }
   ],
+  "announcement": {
+    "text": "站点已升级：补齐友链、说说、日志与 GitHub 跳转，内容持续完善中。",
+    "link": "/about/",
+    "linkLabel": "了解我"
+  },
   "contact": {
     "status": "pending",
     "notice": "内容待确认：公开联系方式待作者补充。"

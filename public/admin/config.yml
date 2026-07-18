@@ -63,6 +63,14 @@ collections:
               fields:
                 - { name: label, label: "名称", widget: string, required: true }
                 - { name: url, label: "链接", widget: string, required: true }
+          - name: announcement
+            label: "首页公告"
+            widget: object
+            required: false
+            fields:
+              - { name: text, label: "公告内容", widget: string, required: true, maxlength: 200 }
+              - { name: link, label: "链接", widget: string, required: false }
+              - { name: linkLabel, label: "链接文字", widget: string, required: false, maxlength: 40 }
           - { name: currentFocus, label: "当前关注", widget: string, required: true, maxlength: 240 }
           - name: contact
             label: "联系方式"
@@ -95,3 +103,44 @@ collections:
                     - { name: date, label: "日期", widget: string, required: true, maxlength: 40 }
                     - { name: title, label: "标题", widget: string, required: true, maxlength: 100 }
                     - { name: description, label: "描述", widget: string, required: true, maxlength: 300 }
+
+  - name: links
+    label: "友链"
+    label_singular: "友链"
+    folder: "src/content/links"
+    create: true
+    format: yml
+    description: "添加互相链接的朋友站点。保存即生效。"
+    fields:
+      - { name: name, label: "站点名", widget: string, required: true, maxlength: 40 }
+      - { name: url, label: "链接", widget: string, required: true }
+      - { name: description, label: "描述", widget: string, required: false, maxlength: 160 }
+      - { name: avatar, label: "头像路径", widget: string, required: false, hint: "站内资源，如 /og/default.svg" }
+
+  - name: says
+    label: "说说"
+    label_singular: "说说"
+    folder: "src/content/says"
+    create: true
+    slug: "{{slug}}"
+    description: "随手记下关于创作、工具与判断的短想法。保存即发布。"
+    fields:
+      - { name: title, label: "标题", widget: string, required: false, maxlength: 80 }
+      - { name: publishDate, label: "发布时间", widget: datetime, required: true, format: "YYYY-MM-DD HH:mm" }
+      - { name: mood, label: "心情 / 标签", widget: string, required: false, maxlength: 40 }
+      - { name: draft, label: "草稿", widget: boolean, default: false }
+      - { name: body, label: "内容", widget: markdown, required: true }
+
+  - name: logs
+    label: "日志"
+    label_singular: "日志"
+    folder: "src/content/logs"
+    create: true
+    slug: "{{slug}}"
+    description: "按时间记录项目与公开实践的轨迹。保存即发布。"
+    fields:
+      - { name: title, label: "标题", widget: string, required: true, maxlength: 80 }
+      - { name: publishDate, label: "日期", widget: datetime, required: true, format: "YYYY-MM-DD HH:mm" }
+      - { name: category, label: "分类", widget: string, required: false, hint: "可选 kebab-case，如 build-in-public" }
+      - { name: draft, label: "草稿", widget: boolean, default: false }
+      - { name: body, label: "内容", widget: markdown, required: true }

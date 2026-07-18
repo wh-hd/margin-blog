@@ -1,0 +1,38 @@
+---
+import { render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getSaysPageModel } from "../../lib/content/view-models";
+const model = await getSaysPageModel();
+const { site, entries, seo } = model;
+const rendered = await Promise.all(entries.map(async (entry) => {
+  const { Content } = await render(entry);
+  return { entry, Content };
+}));
+const dateText = (d: Date) => new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }).format(d);
+---
+<BaseLayout title={seo.title} description={seo.description} canonical={seo.canonical} image={seo.openGraph.image} jsonLd={seo.jsonLd} site={site}>
+  <section class="section shell">
+    <div class="section-header"><div><p class="eyebrow">说说 / Says</p><h1 class="section-title">随手记下的短想法</h1></div></div>
+    <ul class="says-list">
+      {rendered.map(({ entry, Content }) => (
+        <li class="say-item">
+          <div class="say-meta">
+            <time datetime={entry.data.publishDate.toISOString()}>{dateText(entry.data.publishDate)}</time>
+            {entry.data.mood && <span class="say-mood">{entry.data.mood}</span>}
+          </div>
+          <div class="say-body"><Content /></div>
+        </li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .says-list { list-style: none; margin: var(--space-6) 0 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-4); }
+  .say-item { padding: var(--space-4) var(--space-5); border: 1px solid var(--border-subtle); border-radius: 0.75rem; background: var(--bg-canvas); }
+  .say-meta { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-2); color: var(--text-secondary); font-size: var(--size-13); }
+  .say-mood { padding: 2px var(--space-2); border-radius: 999px; background: color-mix(in srgb, var(--action-primary) 12%, transparent); color: var(--action-hover); font-weight: 650; }
+  .say-body { color: var(--text-primary); font-size: var(--size-15); line-height: 1.7; }
+  .say-body :global(p) { margin: 0 0 var(--space-2); }
+  .say-body :global(p:last-child) { margin-bottom: 0; }
+</style>

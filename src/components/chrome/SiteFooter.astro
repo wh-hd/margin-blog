@@ -1,12 +1,15 @@
 ---
-interface Props { brand?: string; positioning?: string; contactText?: string; contactHref?: string; }
-const { brand = "侧注 MARGIN", positioning = "把 AI、产品与创作中的判断，写在实践的页边。", contactText = "公开联系方式待作者确认。", contactHref } = Astro.props;
+import type { SiteSocialLink } from "../../lib/content/types";
+interface Props { brand?: string; positioning?: string; contactText?: string; contactHref?: string; social?: SiteSocialLink[]; }
+const { brand = "wh", positioning = "AI 内容实践 × build in public", contactText = "公开联系方式待作者确认。", contactHref, social = [] } = Astro.props;
 const year = new Date().getUTCFullYear();
 ---
 <footer class="site-footer">
   <div class="shell footer-grid">
-    <section class="footer-identity" aria-labelledby="footer-brand"><h2 id="footer-brand">{brand}</h2><p>{positioning}</p></section>
-    <nav aria-label="页脚导航"><h2>浏览</h2><ul><li><a href="/">首页</a></li><li><a href="/articles/">文章</a></li><li><a href="/categories/">分类</a></li><li><a href="/about/">关于</a></li></ul></nav>
+    <section class="footer-identity" aria-labelledby="footer-brand"><h2 id="footer-brand">{brand}</h2><p>{positioning}</p>
+      {social.length > 0 && <ul class="footer-social">{social.map(({ label, url }) => <li><a href={url} target="_blank" rel="noopener noreferrer">{label}</a></li>)}</ul>}
+    </section>
+    <nav aria-label="页脚导航"><h2>浏览</h2><ul><li><a href="/">首页</a></li><li><a href="/articles/">文章</a></li><li><a href="/archive/">归档</a></li><li><a href="/categories/">分类</a></li><li><a href="/says/">说说</a></li><li><a href="/logs/">日志</a></li><li><a href="/links/">友链</a></li><li><a href="/about/">关于</a></li></ul></nav>
     <section><h2>联系边界</h2><p>{contactText}</p>{contactHref && <a href={contactHref}>联系作者</a>}</section>
     <p class="copyright">© {year} {brand}。内容权利说明待作者确认。</p>
   </div>
@@ -20,6 +23,8 @@ const year = new Date().getUTCFullYear();
   a { display: inline-flex; min-height: 2.75rem; align-items: center; color: var(--text-secondary); font-size: var(--size-14); text-underline-offset: .2em; }
   a:hover { color: var(--action-hover); }
   .footer-identity p { max-width: 28rem; }
+  .footer-social { display: flex; flex-wrap: wrap; gap: var(--space-4); margin-top: var(--space-3); }
+  .footer-social a { min-height: 2rem; padding-inline: var(--space-3); border: 1px solid var(--border-default); border-radius: 999px; }
   .copyright { grid-column: 1 / -1; padding-top: var(--space-6); border-top: 1px solid var(--border-subtle); }
   @media (max-width: 63.99rem) { .footer-grid { grid-template-columns: 1fr 1fr; } .footer-identity { grid-column: 1 / -1; } }
   @media (max-width: 47.99rem) { .site-footer { padding-block: var(--space-10); } .footer-grid { grid-template-columns: 1fr; } .footer-identity, .copyright { grid-column: auto; } }

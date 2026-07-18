@@ -44,6 +44,11 @@ const site = defineCollection({
     defaultOgImage: z.string().regex(/^\/[a-z0-9/_.-]+$/),
     locale: z.literal('zh-CN'),
     social: z.array(z.object({ label: meaningfulText(1, 40), url: absoluteHttpUrl })).default([]),
+    announcement: z.object({
+      text: meaningfulText(1, 200),
+      link: z.string().regex(/^\/[a-z0-9/_.-]*$/, '必须为站内绝对路径，如 /about/').optional(),
+      linkLabel: meaningfulText(1, 40).optional(),
+    }).optional(),
     contact: contactSchema,
     currentFocus: meaningfulText(1, 240),
     about: z.object({
@@ -72,4 +77,34 @@ const taxonomies = defineCollection({
   }),
 });
 
-export const collections = { posts, site, taxonomies };
+const links = defineCollection({
+  loader: glob({ base: './src/content/links', pattern: '**/*.{json,yaml,yml}' }),
+  schema: z.object({
+    name: meaningfulText(1, 40),
+    url: absoluteHttpUrl,
+    description: meaningfulText(1, 160).optional(),
+    avatar: z.string().regex(/^\/[a-z0-9/_.-]+$/, '必须是站内资源路径').optional(),
+  }),
+});
+
+const says = defineCollection({
+  loader: glob({ base: './src/content/says', pattern: '**/*.{md,mdx}' }),
+  schema: z.object({
+    title: meaningfulText(1, 80).optional(),
+    publishDate: z.coerce.date(),
+    mood: meaningfulText(1, 40).optional(),
+    draft: z.boolean().default(false),
+  }),
+});
+
+const logs = defineCollection({
+  loader: glob({ base: './src/content/logs', pattern: '**/*.{md,mdx}' }),
+  schema: z.object({
+    title: meaningfulText(1, 80),
+    publishDate: z.coerce.date(),
+    category: slug.optional(),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { posts, site, taxonomies, links, says, logs };
