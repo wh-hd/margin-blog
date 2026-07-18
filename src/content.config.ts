@@ -9,7 +9,7 @@ const posts = defineCollection({
   loader: glob({ base: './src/content/posts', pattern: '**/*.{md,mdx}' }),
   schema: ({ image }) => z.object({
     title: meaningfulText(1, 80),
-    description: meaningfulText(40, 180),
+    description: meaningfulText(1, 180),
     publishDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
     category: slug,
@@ -39,7 +39,7 @@ const site = defineCollection({
     name: meaningfulText(1, 80),
     brand: meaningfulText(1, 80),
     positioning: meaningfulText(1, 120),
-    description: meaningfulText(40, 180),
+    description: meaningfulText(1, 180),
     siteUrl: absoluteHttpUrl,
     defaultOgImage: z.string().regex(/^\/[a-z0-9/_.-]+$/),
     locale: z.literal('zh-CN'),

@@ -25,9 +25,13 @@ describe('content configuration source', () => {
     expect(new Set(tags.map(({ slug }) => slug)).size).toBe(tags.length);
   });
 
-  it('marks example identity and focus content explicitly', async () => {
+  it('uses a real name and current focus instead of placeholder markers', async () => {
     const site = await readJson('src/content/site/config.json');
-    expect(String(site.name)).toContain('内容待确认');
-    expect(String(site.currentFocus)).toContain('示例内容');
+    const name = String(site.name);
+    const focus = String(site.currentFocus);
+    expect(name).not.toContain('内容待确认');
+    expect(focus).not.toContain('示例内容');
+    expect(name.trim().length).toBeGreaterThan(0);
+    expect(focus.trim().length).toBeGreaterThan(0);
   });
 });
