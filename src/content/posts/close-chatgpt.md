@@ -8,7 +8,6 @@ draft: false
 featured: false
 ---
 
-> 参考来源：[Sac 的 sac-ai.com](https://sac-ai.com)
-> 原文链接：[X @Saccc_c](https://x.com/Saccc_c/status/2058057029810594206)
+> 内容待完善：此处保留文章占位，后续会替换为个人真实思考。
 
 为什么你可以关闭 ChatGPT 了。

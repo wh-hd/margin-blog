@@ -8,6 +8,6 @@ draft: true
 featured: false
 ---
 
-> 参考来源：[Sac 的 sac-ai.com](https://sac-ai.com)
+> 内容待完善：草稿状态，正式发布前需补充个人实践与案例。
 
 AI 时代最重要的能力是什么？从脚本到成片的 AI 视频工作流还在整理中，敬请期待。

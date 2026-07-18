@@ -8,7 +8,6 @@ draft: false
 featured: true
 ---
 
-> 参考来源：[Sac 的 sac-ai.com](https://sac-ai.com)
-> 原文链接：[X @Saccc_c](https://x.com/Saccc_c/status/2030909809676149098)
+> 内容待完善：此处保留文章占位，后续会替换为个人真实思考与案例。
 
 借 MiroFish 聊模拟未来。当一切都能被推演预知，还剩多少想象空间？

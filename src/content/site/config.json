@@ -1,8 +1,8 @@
 {
-  "name": "温辉",
-  "brand": "温辉",
+  "name": "wh",
+  "brand": "wh",
   "positioning": "AI 内容实践 × build in public",
-  "description": "温辉的个人站点，用于展示 AI 内容实践、视频创作和 build in public 项目。",
+  "description": "wh 的个人站点，用于整理 AI 内容实践、视频创作和 build in public 项目。",
   "siteUrl": "https://margin-blog.pages.dev",
   "defaultOgImage": "/og/default.svg",
   "locale": "zh-CN",
@@ -13,9 +13,9 @@
     "status": "pending",
     "notice": "内容待确认：公开联系方式待作者补充。"
   },
-  "currentFocus": "参考 Sac 的 sac-ai.com 内容实践，整理 AI 工具在创作、编程与产品中的可复用判断。",
+  "currentFocus": "整理 AI 工具在创作、编程与产品中的可复用判断，逐步形成自己的工作流。",
   "about": {
-    "intro": "我是温辉。这个站点参考 Sac 的 sac-ai.com 搭建，用于展示 AI 内容实践、视频创作与 build in public 项目。当前内容以 sac-ai.com 作为参考起点，后续会通过后台逐步替换为我的真实实践。",
+    "intro": "我是 wh。这个站点用于记录 AI 内容实践、视频创作与 build in public 项目。当前内容以占位示例为主，后续会通过后台逐步替换为我的真实实践。",
     "questions": [
       "AI 参与内容创作后，哪些判断仍必须由人负责？",
       "如何把单次 AI 实验沉淀为可复用的工作流？",
