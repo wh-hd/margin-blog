@@ -1,0 +1,44 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getArchivePageModel } from "../../lib/content/view-models";
+const model = await getArchivePageModel();
+const { site, seo } = model;
+const dayFmt = (d: Date) => new Intl.DateTimeFormat("zh-CN", { day: "numeric" }).format(d);
+---
+<BaseLayout title={seo.title} description={seo.description} canonical={seo.canonical} image={seo.openGraph.image} jsonLd={seo.jsonLd} site={site}>
+  <div class="shell"><header class="page-intro"><p class="eyebrow">归档 / Archive</p><h1>时间轴</h1><p>按发布时间浏览全部文章，当前共 {model.total} 篇。</p></header></div>
+  <section class="section shell archive">
+    {model.groups.map((g) => (
+      <div class="archive-group">
+        <div class="archive-marker"><span class="archive-month">{g.label}</span></div>
+        <ul class="archive-list">
+          {g.posts.map((p) => (
+            <li class="archive-item">
+              <time datetime={p.publishDate.toISOString()}>{dayFmt(p.publishDate)} 日</time>
+              <a href={p.href}>{p.title}</a>
+              <span class="archive-cat">{p.category.name}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </section>
+</BaseLayout>
+<style>
+  .archive { padding-block: var(--space-8) var(--space-16); }
+  .archive-group { display: grid; grid-template-columns: 10rem minmax(0, 1fr); gap: var(--space-6); padding-block: var(--space-8); border-top: 1px solid var(--border-subtle); }
+  .archive-marker { position: relative; }
+  .archive-month { font-family: var(--font-display); font-size: var(--size-20); color: var(--text-primary); }
+  .archive-list { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--space-3); }
+  .archive-item { display: grid; grid-template-columns: auto 1fr auto; gap: var(--space-4); align-items: baseline; padding: var(--space-3) var(--space-4); border: 1px solid var(--border-default); border-radius: var(--radius-2); background: var(--bg-surface); transition: border-color var(--duration-fast) var(--ease-smooth), transform var(--duration-fast) var(--ease-smooth); }
+  .archive-item:hover { border-color: color-mix(in srgb, var(--action-primary) 38%, var(--border-default)); transform: translateX(var(--space-1)); }
+  .archive-item time { color: var(--text-muted); font-family: var(--font-mono); font-size: var(--size-14); white-space: nowrap; }
+  .archive-item a { color: var(--text-primary); text-decoration: none; text-underline-offset: .18em; font-size: var(--size-18); }
+  .archive-item a:hover { color: var(--action-hover); text-decoration: underline; }
+  .archive-cat { color: var(--action-primary); font-size: var(--size-14); font-weight: 650; }
+  @media (max-width: 47.99rem) {
+    .archive-group { grid-template-columns: 1fr; gap: var(--space-3); }
+    .archive-item { grid-template-columns: auto 1fr; }
+    .archive-cat { grid-column: 2; }
+  }
+</style>

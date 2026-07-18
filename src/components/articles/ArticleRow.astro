@@ -11,28 +11,49 @@ const dateText = new Intl.DateTimeFormat("zh-CN", { year: "numeric", month: "lon
 const reading = post.readingTimeLabel ?? `约 ${post.readingMinutes ?? 1} 分钟`;
 const href = post.href ?? `/articles/${post.slug}/`;
 ---
-<article class="article-row" data-article data-category={post.category.slug} data-tags={post.tags?.map((tag) => tag.slug).join(" ")}>
-  <time datetime={date.toISOString()}>{dateText}</time>
-  <div class="article-content">
-    <h2><a href={href}>{post.title}</a></h2>
-    <p>{post.description}</p>
-    <div class="article-meta">
-      <span>{reading}阅读</span>
-      {showCategory && <a href={`/categories/${post.category.slug}/`}>{post.category.name}</a>}
-      {post.tags?.map((tag) => <a href={`/tags/${tag.slug}/`}>#{tag.name}</a>)}
-    </div>
+<article class="article-card" data-article data-category={post.category.slug} data-tags={post.tags?.map((tag) => tag.slug).join(" ")}>
+  <div class="card-top">
+    <time datetime={date.toISOString()}>{dateText}</time>
+    {showCategory && <a class="card-cat" href={`/categories/${post.category.slug}/`}>{post.category.name}</a>}
+  </div>
+  <h2><a href={href}>{post.title}</a></h2>
+  <p>{post.description}</p>
+  <div class="card-meta">
+    <span class="reading">{reading}阅读</span>
+    <span class="tag-row">{post.tags?.map((tag) => <a href={`/tags/${tag.slug}/`}>#{tag.name}</a>)}</span>
   </div>
 </article>
 <style>
-  .article-row { display: grid; grid-template-columns: 9rem minmax(0, 1fr); gap: var(--space-8); padding-block: var(--space-8); border-top: 1px solid var(--border-subtle); }
-  time { padding-top: var(--space-1); color: var(--text-muted); font-size: var(--size-14); }
-  h2 { margin: 0 0 var(--space-3); font-family: var(--font-display); font-size: var(--size-24); line-height: 1.25; }
-  h2 a { text-decoration: none; text-underline-offset: .18em; transition: color var(--duration-fast) var(--ease-smooth); }
+  .article-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-3);
+    background: var(--bg-surface);
+    box-shadow: 0 1px 2px rgb(24 33 43 / .04);
+    transition: transform var(--duration-base) var(--ease-smooth), box-shadow var(--duration-base) var(--ease-smooth), border-color var(--duration-base) var(--ease-smooth);
+  }
+  .article-card:hover {
+    transform: translateY(calc(var(--space-2) * -1));
+    border-color: color-mix(in srgb, var(--action-primary) 38%, var(--border-default));
+    box-shadow: 0 1.25rem 2.75rem rgb(24 33 43 / .09);
+  }
+  .card-top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); color: var(--text-muted); font-size: var(--size-14); }
+  .card-cat { color: var(--action-primary); font-weight: 800; letter-spacing: .01em; text-decoration: none; text-underline-offset: .2em; }
+  .card-cat:hover { color: var(--action-hover); text-decoration: underline; }
+  h2 { margin: 0; font-family: var(--font-display); font-size: var(--size-24); line-height: 1.28; }
+  h2 a { color: var(--text-primary); text-decoration: none; text-underline-offset: .18em; transition: color var(--duration-fast) var(--ease-smooth); }
   h2 a:hover { color: var(--action-hover); text-decoration: underline; }
-  p { max-width: 48rem; margin: 0 0 var(--space-4); color: var(--text-secondary); }
-  .article-meta { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); color: var(--text-muted); font-size: var(--size-14); }
-  .article-meta a { color: var(--action-primary); text-underline-offset: .2em; }
-  .article-meta a:hover { color: var(--action-hover); }
-  @media (max-width: 63.99rem) { .article-row { grid-template-columns: 7rem minmax(0, 1fr); gap: var(--space-6); } }
-  @media (max-width: 47.99rem) { .article-row { grid-template-columns: 1fr; gap: var(--space-2); padding-block: var(--space-6); } h2 { font-size: var(--size-20); } }
+  p { margin: 0; color: var(--text-secondary); font-size: var(--size-16); line-height: 1.7; }
+  .card-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-4); margin-top: auto; padding-top: var(--space-4); border-top: 1px solid var(--border-subtle); color: var(--text-muted); font-size: var(--size-14); }
+  .tag-row { display: inline-flex; flex-wrap: wrap; gap: var(--space-2) var(--space-3); }
+  .tag-row a { color: var(--action-primary); text-underline-offset: .2em; }
+  .tag-row a:hover { color: var(--action-hover); }
+  @media (max-width: 47.99rem) {
+    .article-card { padding: var(--space-5); }
+    h2 { font-size: var(--size-20); }
+  }
+  @media (prefers-reduced-motion: reduce) { .article-card { transition: none; } .article-card:hover { transform: none; } }
 </style>

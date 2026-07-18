@@ -2,6 +2,17 @@
 import ArticleRow from "./ArticleRow.astro";
 import EmptyState from "../content/EmptyState.astro";
 interface Props { posts: any[]; showCategory?: boolean; emptyDescription?: string; }
-const { posts, showCategory = true, emptyDescription = "文章还在编辑台上。你可以先了解侧注 MARGIN 关注的问题。" } = Astro.props;
+const { posts, showCategory = true, emptyDescription = "文章还在编辑台上。你可以先了解这个博客关注的问题。" } = Astro.props;
 ---
 {posts.length > 0 ? <div class="article-list">{posts.map((post) => <ArticleRow {post} {showCategory} />)}</div> : <EmptyState title="文章仍在编辑中" description={emptyDescription} actionHref="/about/" actionLabel="前往关于页" />}
+
+<style>
+  .article-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+    gap: var(--space-6);
+  }
+  @media (max-width: 47.99rem) {
+    .article-list { grid-template-columns: 1fr; gap: var(--space-5); }
+  }
+</style>

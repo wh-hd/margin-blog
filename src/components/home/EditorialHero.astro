@@ -2,15 +2,15 @@
 import type { PostSummary } from "../../lib/content/types";
 import AiParticleField from "./AiParticleField.astro";
 
-interface Props { featured?: PostSummary; }
-const { featured } = Astro.props;
+interface Props { featured?: PostSummary; brand?: string; }
+const { featured, brand = "wh" } = Astro.props;
 const dateText = featured ? new Intl.DateTimeFormat("zh-CN", { year: "numeric", month: "long", day: "numeric" }).format(new Date(featured.publishDate)) : "";
 ---
 <section class="hero">
   <div class="hero-inner shell editorial-grid">
     <div class="hero-copy">
       <p class="eyebrow">独立内容主场 / Independent notes</p>
-      <h1>侧注 <span>MARGIN</span></h1>
+      <h1>{brand}</h1>
       <p class="positioning">把 AI、产品与创作中的判断，写在实践的页边。</p>
       <p class="explain">记录从想法、原型到上线之间，那些真正改变结果的判断。</p>
       <div class="signal-note" aria-label="网站关注方向">

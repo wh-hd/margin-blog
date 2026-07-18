@@ -164,6 +164,20 @@ export interface TagPageModel {
   seo: SeoViewModel;
 }
 
+export interface ArchiveGroup {
+  year: number;
+  month: number;
+  label: string;
+  posts: PostSummary[];
+}
+
+export interface ArchivePageModel {
+  site: SiteConfig;
+  groups: ArchiveGroup[];
+  total: number;
+  seo: SeoViewModel;
+}
+
 export interface AboutPageModel {
   site: SiteConfig;
   seo: SeoViewModel;

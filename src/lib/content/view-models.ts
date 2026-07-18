@@ -20,6 +20,7 @@ import type {
   CategoryPageModel,
   HomePageModel,
   TagPageModel,
+  ArchivePageModel,
 } from './types';
 
 const pageTitle = (page: string, brand: string) => `${page}｜${brand}`;
@@ -115,6 +116,30 @@ export async function getTagPageModel(slug: string): Promise<TagPageModel | unde
     posts: posts.filter((post) => post.tags.some((item) => item.slug === slug)),
     relatedTags,
     seo: buildSeoViewModel({ title: pageTitle(`# ${tag.name}`, site.brand), description: tag.description, path: `/tags/${slug}/`, site }),
+  };
+}
+
+export async function getArchivePageModel(): Promise<ArchivePageModel> {
+  const [site, posts] = await Promise.all([getSiteConfig(), getPublishedPosts()]);
+  const sorted = [...posts].sort((a, b) => b.publishDate.getTime() - a.publishDate.getTime());
+  const buckets = new Map<string, typeof sorted>();
+  for (const post of sorted) {
+    const d = post.publishDate;
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    if (!buckets.has(key)) buckets.set(key, []);
+    buckets.get(key)!.push(post);
+  }
+  const groups = [...buckets.entries()]
+    .sort(([a], [b]) => (a < b ? 1 : -1))
+    .map(([key, ps]) => {
+      const [year, month] = key.split('-').map(Number);
+      return { year, month, label: `${year} 年 ${month} 月`, posts: ps };
+    });
+  return {
+    site,
+    groups,
+    total: posts.length,
+    seo: buildSeoViewModel({ title: pageTitle('归档', site.brand), description: '按发布时间浏览全部文章。', path: '/archive/', site }),
   };
 }
 

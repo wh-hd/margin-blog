@@ -3,24 +3,191 @@ import { render } from "astro:content";
 import ArticleList from "../../components/articles/ArticleList.astro";
 import ArticleHeader from "../../components/content/ArticleHeader.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import TableOfContents from "../../components/content/TableOfContents.astro";
 import { getArticleStaticPaths } from "../../lib/content/view-models";
 import type { ArticlePageModel } from "../../lib/content/types";
 export const getStaticPaths = getArticleStaticPaths;
 interface Props { model: ArticlePageModel; }
 const { model } = Astro.props;
 const { site, seo, post, related } = model;
-const { Content } = await render(post.entry);
+const { Content, headings } = await render(post.entry);
 ---
 <BaseLayout title={seo.title} description={seo.description} canonical={seo.canonical} image={seo.openGraph.image} type="article" jsonLd={seo.jsonLd} site={site}>
-  <article>
+  <article class="article-page">
     <ArticleHeader {post} />
-    <div class="shell"><div class="prose"><Content /></div></div>
+    <div class="article-shell shell">
+      <div class="prose-wrap">
+        <div class="prose"><Content /></div>
+      </div>
+      <aside class="toc-aside" data-toc-aside>
+        <TableOfContents headings={headings} />
+      </aside>
+    </div>
     <footer class="article-footer shell">
       <div class="taxonomy"><span>分类：</span><a href={`/categories/${post.category.slug}/`}>{post.category.name}</a><span>标签：</span>{post.tags.map((tag) => <a href={`/tags/${tag.slug}/`}>#{tag.name}</a>)}</div>
     </footer>
   </article>
   {related.length > 0 && <section class="section shell"><div class="section-header"><h2 class="section-title">继续阅读</h2></div><ArticleList posts={related} /></section>}
+  <div class="floating-tools" data-floating-tools aria-hidden="false">
+    <button class="ft-btn" type="button" data-toc-toggle aria-label="切换目录"><span aria-hidden="true">☰</span></button>
+    <button class="ft-btn" type="button" data-top-toggle aria-label="回到顶部" data-visible="false"><span aria-hidden="true">↑</span></button>
+  </div>
 </BaseLayout>
+<script>
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const headerH = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--header-height")) || 64;
+
+  // 1) 代码块一键复制
+  const prose = document.querySelector<HTMLElement>(".prose");
+  if (prose) {
+    prose.querySelectorAll<HTMLPreElement>("pre").forEach((pre) => {
+      if (pre.parentElement?.classList.contains("code-wrap")) return;
+      const wrap = document.createElement("div");
+      wrap.className = "code-wrap";
+      pre.parentNode?.insertBefore(wrap, pre);
+      wrap.appendChild(pre);
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "copy-btn";
+      btn.textContent = "复制";
+      btn.setAttribute("aria-label", "复制代码");
+      btn.addEventListener("click", async () => {
+        const code = pre.querySelector("code")?.textContent ?? pre.textContent ?? "";
+        try {
+          await navigator.clipboard.writeText(code);
+          btn.textContent = "已复制";
+        } catch {
+          btn.textContent = "复制失败";
+        }
+        window.setTimeout(() => (btn.textContent = "复制"), 1600);
+      });
+      wrap.appendChild(btn);
+    });
+  }
+
+  // 2) TOC 滚动高亮
+  const tocLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>("[data-toc] a"));
+  if (tocLinks.length > 0) {
+    const headings = tocLinks
+      .map((a) => document.getElementById((a.getAttribute("href") || "").replace(/^#/, "")))
+      .filter((el): el is HTMLElement => !!el);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const id = entry.target.id;
+          tocLinks.forEach((a) => a.toggleAttribute("data-active", a.getAttribute("href") === `#${id}`));
+        });
+      },
+      { rootMargin: `-${headerH + 12}px 0px -68% 0px`, threshold: 0 },
+    );
+    headings.forEach((el) => observer.observe(el));
+  }
+
+  // 3) 悬浮工具：回顶 + 目录抽屉
+  const tools = document.querySelector<HTMLElement>("[data-floating-tools]");
+  const topBtn = tools?.querySelector<HTMLButtonElement>("[data-top-toggle]");
+  const tocBtn = tools?.querySelector<HTMLButtonElement>("[data-toc-toggle]");
+  const tocAside = document.querySelector<HTMLElement>("[data-toc-aside]");
+  if (topBtn) {
+    window.addEventListener("scroll", () => topBtn.toggleAttribute("data-visible", window.scrollY > 600), { passive: true });
+    topBtn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: reduceMotion.matches ? "auto" : "smooth" }));
+  }
+  tocBtn?.addEventListener("click", () => tocAside?.toggleAttribute("data-open"));
+</script>
 <style>
-  .article-footer { padding-block: var(--space-12) var(--space-16); }.taxonomy { display: flex; max-width: var(--reading); flex-wrap: wrap; gap: var(--space-2) var(--space-4); padding-top: var(--space-6); border-top: 1px solid var(--border-default); color: var(--text-secondary); font-size: var(--size-14); }.taxonomy a { color: var(--action-primary); text-underline-offset: .2em; }.taxonomy a:hover { color: var(--action-hover); }
+  .article-page { position: relative; }
+  .article-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 15rem;
+    gap: var(--space-12);
+    align-items: start;
+    padding-block: var(--space-8) var(--space-12);
+  }
+  .prose-wrap { width: min(100%, var(--reading)); margin-inline: auto; }
+  .toc-aside {
+    position: sticky;
+    top: calc(var(--header-height) + var(--space-6));
+    max-height: calc(100vh - var(--header-height) - var(--space-10));
+    overflow-y: auto;
+  }
+  .article-footer { padding-block: var(--space-10) var(--space-16); }
+  .taxonomy { display: flex; max-width: var(--reading); flex-wrap: wrap; gap: var(--space-2) var(--space-3); padding-top: var(--space-6); border-top: 1px solid var(--border-default); color: var(--text-secondary); font-family: var(--font-ui); font-size: var(--size-14); }
+  .taxonomy a { color: var(--action-primary); text-underline-offset: .2em; }
+  .taxonomy a:hover { color: var(--action-hover); }
+
+  /* 代码复制 */
+  .prose .code-wrap { position: relative; max-width: 100%; }
+  .prose .code-wrap pre { margin: 0; }
+  .copy-btn {
+    position: absolute;
+    z-index: 2;
+    top: var(--space-2);
+    right: var(--space-2);
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid rgb(255 255 255 / .18);
+    border-radius: var(--radius-1);
+    background: rgb(255 255 255 / .1);
+    color: rgb(251 250 247 / .92);
+    font-family: var(--font-ui);
+    font-size: var(--size-12);
+    font-weight: 650;
+    cursor: pointer;
+    transition: background var(--duration-fast) var(--ease-smooth);
+  }
+  .copy-btn:hover { background: rgb(255 255 255 / .2); }
+
+  /* 悬浮工具 */
+  .floating-tools {
+    position: fixed;
+    z-index: 30;
+    right: var(--space-5);
+    bottom: var(--space-5);
+    display: grid;
+    gap: var(--space-3);
+  }
+  .ft-btn {
+    width: 2.75rem;
+    height: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-pill);
+    background: var(--bg-surface);
+    color: var(--action-primary);
+    font-size: var(--size-18);
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 1rem 2.25rem rgb(24 33 43 / .14);
+    transition: transform var(--duration-fast) var(--ease-smooth), background var(--duration-fast) var(--ease-smooth), opacity var(--duration-base) var(--ease-smooth);
+  }
+  .ft-btn:hover { background: var(--action-subtle); transform: translateY(-2px); }
+  .ft-btn[data-top-toggle][data-visible="false"] { opacity: 0; pointer-events: none; transform: translateY(6px); }
+
+  @media (max-width: 63.99rem) {
+    .article-shell { grid-template-columns: 1fr; gap: var(--space-8); }
+    .toc-aside {
+      display: none;
+      position: fixed;
+      z-index: 35;
+      top: var(--header-height);
+      right: var(--space-4);
+      left: var(--space-4);
+      max-height: min(60vh, 24rem);
+      padding: var(--space-5);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-3);
+      background: var(--bg-surface);
+      box-shadow: 0 1.5rem 3rem rgb(24 33 43 / .16);
+      animation: toc-in var(--duration-base) var(--ease-smooth);
+    }
+    .toc-aside[data-open] { display: block; }
+    .prose-wrap { width: 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ft-btn { transition: none; }
+    .toc-aside[data-open] { animation: none; }
+  }
+  @keyframes toc-in { from { opacity: 0; transform: translateY(-8px); } }
 </style>

@@ -9,7 +9,7 @@ const model = await getHomePageModel();
 const { site, seo } = model;
 ---
 <BaseLayout title={seo.title} description={seo.description} canonical={seo.canonical} image={seo.openGraph.image} jsonLd={seo.jsonLd} site={site}>
-  <EditorialHero featured={model.featured[0]} />
+  <EditorialHero featured={model.featured[0]} brand={site.brand} />
   <CurrentFocus text={site.currentFocus} />
   {model.featured.length > 1 && <section class="section shell"><div class="section-header"><h2 class="section-title">重点文章</h2><a class="link-arrow" href="/articles/">浏览全部 <span aria-hidden="true">→</span></a></div><ArticleList posts={model.featured.slice(1)} /></section>}
   <section class="section shell"><div class="section-header"><h2 class="section-title">最新文章</h2><a class="link-arrow" href="/articles/">全部文章 <span aria-hidden="true">→</span></a></div><ArticleList posts={model.latest} /></section>
